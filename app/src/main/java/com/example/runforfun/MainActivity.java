@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     int pasos = -3;
     TextView textView;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
