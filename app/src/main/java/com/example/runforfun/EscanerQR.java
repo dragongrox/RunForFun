@@ -85,7 +85,7 @@ public class EscanerQR extends AppCompatActivity implements ZXingScannerView.Res
 
     public void generarQRPropio() {
         try {
-            bitmap = TextToImageEncode(MainActivity.usuario);
+            bitmap = TextToImageEncode(MainActivity.nombreUsuario);
         } catch (WriterException e) {
             e.printStackTrace();
         }
