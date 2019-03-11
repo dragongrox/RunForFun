@@ -9,25 +9,34 @@ public class Usuario {
             solicitudesEnviadas = "n",
             solicitudesRecibidas = "n",
             ultimaFecha = String.valueOf(new Date());
-    int calorias = 0,
-            caloriasDia = 0,
-            pasos = 0,
-            pasosDia = 0;
+    int pasos = 0,
+            pasosDia = 0,
+            altura = 0,
+            peso = 70;
+    double distanciaDia = 0,
+            distancia = 0;
+
+    float calorias = 0,
+            caloriasDia = 0;
 
     public Usuario() {
 
     }
 
-    public Usuario(String amigos, String nombre, String solicitudesEnviadas, String solicitudesRecibidas, int calorias, int caloriasDia, int pasos, int pasosDia, String ultimaFecha) {
+    public Usuario(String amigos, String nombre, String solicitudesEnviadas, String solicitudesRecibidas, String ultimaFecha, float calorias, float caloriasDia, int pasos, int pasosDia, int altura, int peso, double distanciaDia, double distancia) {
         this.amigos = amigos;
         this.nombre = nombre;
         this.solicitudesEnviadas = solicitudesEnviadas;
         this.solicitudesRecibidas = solicitudesRecibidas;
+        this.ultimaFecha = ultimaFecha;
         this.calorias = calorias;
         this.caloriasDia = caloriasDia;
         this.pasos = pasos;
         this.pasosDia = pasosDia;
-        this.ultimaFecha = ultimaFecha;
+        this.altura = altura;
+        this.peso = peso;
+        this.distanciaDia = distanciaDia;
+        this.distancia = distancia;
     }
 
     public String getAmigos() {
@@ -62,19 +71,19 @@ public class Usuario {
         this.solicitudesRecibidas = solicitudesRecibidas;
     }
 
-    public int getCalorias() {
+    public float getCalorias() {
         return calorias;
     }
 
-    public void setCalorias(int calorias) {
+    public void setCalorias(float calorias) {
         this.calorias = calorias;
     }
 
-    public int getCaloriasDia() {
+    public float getCaloriasDia() {
         return caloriasDia;
     }
 
-    public void setCaloriasDia(int caloriasDia) {
+    public void setCaloriasDia(float caloriasDia) {
         this.caloriasDia = caloriasDia;
     }
 
@@ -102,6 +111,38 @@ public class Usuario {
         this.ultimaFecha = ultimaFecha;
     }
 
+    public int getAltura() {
+        return altura;
+    }
+
+    public void setAltura(int altura) {
+        this.altura = altura;
+    }
+
+    public int getPeso() {
+        return peso;
+    }
+
+    public void setPeso(int peso) {
+        this.peso = peso;
+    }
+
+    public double getDistanciaDia() {
+        return distanciaDia;
+    }
+
+    public void setDistanciaDia(double distanciaDia) {
+        this.distanciaDia = distanciaDia;
+    }
+
+    public double getDistancia() {
+        return distancia;
+    }
+
+    public void setDistancia(double distancia) {
+        this.distancia = distancia;
+    }
+
     @Override
     public String toString() {
         return "Usuario{" +
@@ -109,11 +150,17 @@ public class Usuario {
                 ", nombre='" + nombre + '\'' +
                 ", solicitudesEnviadas='" + solicitudesEnviadas + '\'' +
                 ", solicitudesRecibidas='" + solicitudesRecibidas + '\'' +
+                ", ultimaFecha='" + ultimaFecha + '\'' +
                 ", calorias=" + calorias +
                 ", caloriasDia=" + caloriasDia +
                 ", pasos=" + pasos +
                 ", pasosDia=" + pasosDia +
-                ", ultimaFecha=" + ultimaFecha +
+                ", altura=" + altura +
+                ", peso=" + peso +
+                ", distanciaDia=" + distanciaDia +
+                ", distancia=" + distancia +
                 '}';
     }
+
+
 }

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "467467486290",
+    "firebase_url": "https://runforfun-3d72c.firebaseio.com",
+    "project_id": "runforfun-3d72c",
+    "storage_bucket": "runforfun-3d72c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:467467486290:android:38c59bac257e06e7",
+        "android_client_info": {
+          "package_name": "com.example.runforfun"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "467467486290-spkpuee2fg1qckfspc4ubdc734btpmcp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.runforfun",
+            "certificate_hash": "a7321e0c2e9c2dc0c26fec61147a857d400e50d3"
+          }
+        },
+        {
+          "client_id": "467467486290-pjoiuhov7s87571ln8jlt26a0i7su9v4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVDLIvVz-tFlSE2KH3th_ODum5NHaqW_s"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "467467486290-pjoiuhov7s87571ln8jlt26a0i7su9v4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -2,6 +2,7 @@ package com.example.runforfun;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -28,35 +29,58 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
-    static String nombreUsuario = "default";
-    int calorias, caloriasDia, pasos = -3, pasosDia, pasosActualizados = pasos;
-    Date ultimaFecha;
+import static java.lang.Thread.sleep;
 
-    Usuario usuario;
+/**
+ * The type Main activity.
+ */
+public class MainActivity extends AppCompatActivity {
+
+    static String nombreUsuario = "default";
+    static Usuario usuario;
+    static FirebaseDatabase database;
+    static DatabaseReference databaseReferenceUsuario;
+    static DatabaseReference databaseReferenceAmigo;
+    int pasos = -3,
+            pasosDia,
+            pasosActualizados = pasos;
 
     SensorManager sensorManager;
     Sensor sensor;
     SensorEventListener andar;
-
-    TextView textViewPasosDia, textViewPasos, textViewCalorias, textViewCaloriasDia;
-    EditText editTextNombre;
+    float velocidad = 0;
+    //imagenGif
+    int contImag = 0;
 
     private static final int RC_SIGN_IN = 123;
 
     FirebaseUser user;
-    FirebaseDatabase database;
-    DatabaseReference databaseReferenceUsuario;
+    Drawable[] almacenImag;
+    TextView textViewPasosDia,
+            textViewPasos,
+            textViewCalorias,
+            textViewCaloriasDia,
+            textViewDistancia,
+            textViewDistanciaDia,
+            textViewVelocidad;
+    EditText editTextNombre,
+            editTextAltura,
+            editTextPeso;
+    boolean mainActivo = true;
 
+    //formateador de los decimales
+    DecimalFormat df;
 
     @Override
     protected void onStop() {
         databaseReferenceUsuario.setValue(usuario);
+        mainActivo = false;
         super.onStop();
 
     }
@@ -66,15 +90,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        almacenImag = new Drawable[]{getDrawable(R.drawable.g0), getDrawable(R.drawable.g1), getDrawable(R.drawable.g2), getDrawable(R.drawable.g3), getDrawable(R.drawable.g4), getDrawable(R.drawable.g5)};
+
+        //formateador de los decimales
+        df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.CEILING);
+
         //inicializacion de los campos
         textViewPasosDia = findViewById(R.id.textViewPasosDia);
         textViewCalorias = findViewById(R.id.textViewCalorias);
         textViewCaloriasDia = findViewById(R.id.textViewCaloriasDia);
         textViewPasos = findViewById(R.id.textViewPasos);
+        textViewDistancia = findViewById(R.id.textViewDistancia);
+        textViewDistanciaDia = findViewById(R.id.textViewDistanciaDia);
+        textViewVelocidad = findViewById(R.id.textViewVelocidad);
         editTextNombre = findViewById(R.id.editTextNombre);
+        editTextAltura = findViewById(R.id.editTextAltura);
+        editTextPeso = findViewById(R.id.editTextPeso);
 
         //Autentificacion
-
         FirebaseApp.initializeApp(this);
         createSignInIntent();
 
@@ -85,10 +119,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //Creacion y configuracion del sensor de podometro
-
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
 
+        //comprobamos que exista el sensor del podometro
         if (sensor == null) {
             Toast.makeText(this, "No tienes podómetro", Toast.LENGTH_LONG).show();
         }
@@ -96,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         andar = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
-
+                //cada vez que de un paso se sumaran los pasos
                 pasos = (usuario.getPasos());
                 pasosDia = (usuario.getPasos());
                 pasos++;
@@ -105,8 +139,15 @@ public class MainActivity extends AppCompatActivity {
                 usuario.setPasosDia(pasosDia);
                 textViewPasosDia.setText(getResources().getString(R.string.pasosDia) + ": " + pasosDia);
                 textViewPasos.setText(getResources().getString(R.string.pasos) + ": " + pasos);
+                textViewCalorias.setText(getResources().getString(R.string.calorias) + ": \t" + df.format(usuario.getCalorias()));
+                textViewCaloriasDia.setText(getResources().getString(R.string.caloriasDia) + ": \t" + df.format(usuario.getCaloriasDia()));
+                textViewDistancia.setText(getResources().getString(R.string.distancia) + ": " + df.format(usuario.getDistancia()));
+                textViewDistanciaDia.setText(getResources().getString(R.string.distanciaDia) + ": " + df.format(usuario.getDistanciaDia()));
+                textViewVelocidad.setText(velocidad + "km/h");
+                //actualizamos la informacion en firebas cada 100 pasos y recalculamos las calorias
                 if (pasos > (pasosActualizados + 100))
                     databaseReferenceUsuario.setValue(usuario);
+
 
             }
 
@@ -116,9 +157,14 @@ public class MainActivity extends AppCompatActivity {
         };
 
         sensorManager.registerListener(andar, sensor, SensorManager.SENSOR_DELAY_GAME);
+
+        new SincronizacionDatosAsyncTask().execute();
     }
 
 
+    /**
+     * metodo para leer usuario.
+     */
     public void leerUsuario() {
         //Extraemos el email y por lo consiguiente su id en la base de datos
         String[] emailPartido = user.getEmail().split("@");
@@ -130,20 +176,35 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    //extraer los datos del usuario de la base de datos
                     usuario.setAmigos(dataSnapshot.child("amigos").getValue().toString());
-                    usuario.setCalorias(Integer.parseInt(dataSnapshot.child("calorias").getValue().toString()));
-                    usuario.setCaloriasDia(Integer.parseInt(dataSnapshot.child("caloriasDia").getValue().toString()));
+                    usuario.setCalorias(Float.parseFloat(dataSnapshot.child("calorias").getValue().toString()));
+                    usuario.setCaloriasDia(Float.parseFloat(dataSnapshot.child("caloriasDia").getValue().toString()));
                     usuario.setNombre(dataSnapshot.child("nombre").getValue().toString());
                     usuario.setPasos(Integer.parseInt(dataSnapshot.child("pasos").getValue().toString()));
                     usuario.setPasosDia(Integer.parseInt(dataSnapshot.child("pasosDia").getValue().toString()));
                     usuario.setSolicitudesEnviadas(dataSnapshot.child("solicitudesEnviadas").getValue().toString());
                     usuario.setSolicitudesRecibidas(dataSnapshot.child("solicitudesRecibidas").getValue().toString());
                     usuario.setUltimaFecha(dataSnapshot.child("ultimaFecha").getValue().toString());
-                    editTextNombre.setText(usuario.getNombre());
+                    usuario.setAltura(Integer.parseInt(dataSnapshot.child("altura").getValue().toString()));
+                    usuario.setPeso(Integer.parseInt(dataSnapshot.child("peso").getValue().toString()));
+                    usuario.setDistancia(Double.parseDouble(dataSnapshot.child("distancia").getValue().toString()));
+                    usuario.setDistanciaDia(Double.parseDouble(dataSnapshot.child("distanciaDia").getValue().toString()));
+
+                    //mostrar los datos visibles
+                    editTextNombre.setText(usuario.getNombre() + "");
+                    editTextAltura.setText(usuario.getAltura() + "");
+                    editTextPeso.setText(usuario.getPeso() + "");
                     textViewPasosDia.setText(getResources().getString(R.string.pasosDia) + ": " + usuario.getPasosDia());
                     textViewPasos.setText(getResources().getString(R.string.pasos) + ": " + usuario.getPasos());
-                    System.out.println("adsadad");
+                    textViewCalorias.setText(getResources().getString(R.string.calorias) + ": \t" + df.format(usuario.getCalorias()));
+                    textViewCaloriasDia.setText(getResources().getString(R.string.caloriasDia) + ": \t" + df.format(usuario.getCaloriasDia()));
+                    textViewDistancia.setText(getResources().getString(R.string.distancia) + ": " + df.format(usuario.getDistancia()));
+                    textViewDistanciaDia.setText(getResources().getString(R.string.distanciaDia) + ": " + df.format(usuario.getDistanciaDia()));
+
+
                 } else {
+                    //creamos los datos del nuevo usuario usando los valores del usuario por defecto
                     databaseReferenceUsuario.setValue(usuario);
                 }
             }
@@ -155,6 +216,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Creacion del intent para el inicio de sesion
+     */
     public void createSignInIntent() {
         // [START auth_fui_create_intent]
         // Choose authentication providers
@@ -194,6 +258,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Desconecta de la cuenta
+     *
+     * @param view view del main
+     */
     public void signOut(View view) {
         //guardamos los datos
         databaseReferenceUsuario.setValue(usuario);
@@ -208,6 +277,9 @@ public class MainActivity extends AppCompatActivity {
         // [END auth_fui_signout]
     }
 
+    /**
+     * Tema y logo.
+     */
     public void themeAndLogo() {
         List<AuthUI.IdpConfig> providers = Collections.emptyList();
 
@@ -223,6 +295,9 @@ public class MainActivity extends AppCompatActivity {
         // [END auth_fui_theme_logo]
     }
 
+    /**
+     * Eliminacion del usuario (no se usa)
+     */
     public void delete() {
         // [START auth_fui_delete]
         AuthUI.getInstance()
@@ -236,31 +311,47 @@ public class MainActivity extends AppCompatActivity {
         // [END auth_fui_delete]
     }
 
-    public class SincronizacionDatosAsyncTask extends AsyncTask<String, Integer, Integer> {
+    /**
+     * Metodo que se encarga de introducir datos personalizados
+     */
+    public void OnClicEditarCampos(View view) {
+        boolean success = true;
+        if (editTextNombre.isEnabled()) {
+            if (editTextNombre.getText().toString().trim().length() > 0) {
+                usuario.setNombre(editTextNombre.getText() + "");
+            } else {
+                Toast.makeText(this, getResources().getString(R.string.errorNombre), Toast.LENGTH_SHORT).show();
+                success = false;
+            }
+            if (editTextAltura.getText().toString().trim().length() > 2) {
+                usuario.setAltura(Integer.parseInt(editTextAltura.getText().toString().trim()));
+            } else {
+                Toast.makeText(this, getResources().getString(R.string.errorAltura), Toast.LENGTH_SHORT).show();
+                success = false;
+            }
+            if (Integer.parseInt(editTextPeso.getText().toString().trim()) > 1) {
+                usuario.setPeso(Integer.parseInt(editTextPeso.getText().toString().trim()));
+            } else {
+                Toast.makeText(this, getResources().getString(R.string.errorPeso), Toast.LENGTH_SHORT).show();
+                success = false;
+            }
 
-        @Override
-        protected Integer doInBackground(String... strings) {
-
-            return 0;
-        }
-
-        @Override
-        protected void onPreExecute() {
-
-        }
-
-        @Override
-        protected void onPostExecute(Integer integer) {
-
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-
+            if (success) {
+                databaseReferenceUsuario.setValue(usuario);
+                editTextNombre.setEnabled(false);
+                editTextAltura.setEnabled(false);
+                editTextPeso.setEnabled(false);
+            }
+        } else {
+            editTextPeso.setEnabled(true);
+            editTextAltura.setEnabled(true);
+            editTextNombre.setEnabled(true);
         }
     }
 
+    /**
+     * Privacidad y terminos
+     */
     public void privacyAndTerms() {
         List<AuthUI.IdpConfig> providers = Collections.emptyList();
         // [START auth_fui_pp_tos]
@@ -276,9 +367,66 @@ public class MainActivity extends AppCompatActivity {
         // [END auth_fui_pp_tos]
     }
 
+    /**
+     * On click aniadir amigo.
+     *
+     * @param view view del main
+     */
     public void OnClickAniadirAmigo(View view) {
         Intent intentAniadirAmigo = new Intent(getApplicationContext(), EscanerQR.class);
         startActivity(intentAniadirAmigo);
+    }
+
+    /**
+     * The type Sincronizacion datos async task.
+     */
+    public class SincronizacionDatosAsyncTask extends AsyncTask<String, Integer, Integer> {
+        int pasosCache = pasos;
+        //distancia en m que se recorre al dar un paso
+        float multiplicadorPasos;
+
+        @Override
+        protected Integer doInBackground(String... strings) {
+            do {
+                try {
+                    sleep(6000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                velocidad = (((pasos - pasosCache) * 10) * multiplicadorPasos) * 0.06f;
+                usuario.setDistancia(usuario.getDistancia() + ((pasos - pasosCache) * multiplicadorPasos) / 1000);
+                usuario.setDistanciaDia(usuario.getDistanciaDia() + ((pasos - pasosCache) * multiplicadorPasos) / 1000);
+                if (velocidad >= 7) {
+                    usuario.calorias += 0.048f * (usuario.getPeso() * 2.2) * 0.25f;
+                    usuario.caloriasDia += 0.048f * (usuario.getPeso() * 2.2) * 0.25f;
+                } else if (velocidad > 4) {
+                    usuario.calorias += 0.029f * (usuario.getPeso() * 2.2) * 0.25f;
+                    usuario.caloriasDia += 0.048f * (usuario.getPeso() * 2.2) * 0.25f;
+                }
+                pasosCache = pasos;
+
+            } while (mainActivo);
+            return 0;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            if (usuario.altura > 170)
+                multiplicadorPasos = 0.7f;
+            else
+                multiplicadorPasos = 0.6f;
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+
+        }
     }
 
 

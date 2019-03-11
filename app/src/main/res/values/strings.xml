@@ -6,7 +6,7 @@
     <!-- Twitter consumer key and secret -->
     <string name="twitter_consumer_key" translatable="false">YOUR_CONSUMER_KEY</string>
     <string name="twitter_consumer_secret" translatable="false">YOUR_CONSUMER_SECRET</string>
-
+    <!-- Campos -->
     <string name="nombre">Nombre</string>
     <string name="calorias">Calorias en total</string>
     <string name="caloriasDia">Calorias hoy</string>
@@ -15,6 +15,17 @@
     <string name="solicitudesEnviadas">Solicitudes enviadas</string>
     <string name="solicitudesrecibidas">Solicitudes recibidas</string>
     <string name="cerrarSesion">Cerrar sesión</string>
+    <string name="buttonEditar">Editar</string>
+    <string name="altura">Altura (en cm)</string>
+    <string name="peso">Peso (en kg)</string>
+    <string name="distanciaDia">Distancia recorrida hoy</string>
+    <string name="distancia">Distancie en total recorrida</string>
+    <!-- Errores -->
+    <string name="errorNombre">"No es un nombre valido"</string>
+    <string name="errorAltura">"No es una altura valida"</string>
+    <string name="errorPeso">"No es un peso valido"</string>
+    <string name="errorPeticionExistente">Ya has enviado una solicitud a este usuario</string>
+    <string name="errorAmigoExistente">Ya tienes de amigo a este usuario</string>
 
 
 </resources>
