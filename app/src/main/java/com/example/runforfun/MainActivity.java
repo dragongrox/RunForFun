@@ -6,6 +6,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -47,25 +48,25 @@ import static java.lang.Thread.sleep;
  * The type Main activity.
  */
 public class MainActivity extends AppCompatActivity {
-
-    static String nombreUsuario = "default";
+    private static final int RC_SIGN_IN = 123;
     static Usuario usuario;
     static FirebaseDatabase database;
     static DatabaseReference databaseReferenceUsuario;
     static DatabaseReference databaseReferenceAmigo;
+    //firebase inicializacion
+    static String nombreUsuario = "default";
+    static boolean sonido = false;
+    //pasos
     int pasos = -3,
             pasosDia,
             pasosActualizados = pasos;
-
-    SensorManager sensorManager;
     Sensor sensor;
     SensorEventListener andar;
     float velocidad = 0;
+
     //imagenGif
     int contImag = 0;
     ImageView imageView;
-
-    private static final int RC_SIGN_IN = 123;
 
     //campos main
     FirebaseUser user;
@@ -80,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
             editTextAltura,
             editTextPeso;
     boolean mainActivo = true;
+    //inicilizacion de sensores
+    SensorManager sensorManager;
 
     //campos menu lateral
     List<String> listaAmigos;
@@ -92,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static void EliminarAmigo(String nombreAmigo) {
         Usuario usuarioAmigo = new Usuario();
+        sonido = true;
         databaseReferenceAmigo = database.getReference(nombreAmigo);
         databaseReferenceAmigo.addValueEventListener(new ValueEventListener() {
             @Override
@@ -125,6 +129,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void ReproducirSonido() {
+        //Sonidos
+        MediaPlayer mediaPlayer;
+        //inicializamos el media player para el sonido
+        mediaPlayer = MediaPlayer.create(this, R.raw.omaewanani);
+        mediaPlayer.setLooping(false);
+        mediaPlayer.start();
+        sonido = false;
+    }
+
     @Override
     protected void onStop() {
         database = null;
@@ -138,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //habilitamos la persistencia en el disco de firebase
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         database = FirebaseDatabase.getInstance();
         databaseReferenceAmigo = database.getReference(nombreUsuario);
 
@@ -449,6 +462,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * metodo que abre la vista web de la pagina del creador
+     *
+     * @param view
+     */
+    public void irAlSitioclick(View view) {
+        Intent i = new Intent(this, WebActivity.class);
+        startActivity(i);
+    }
+
+    /**
      * Privacidad y terminos
      */
     public void privacyAndTerms() {
@@ -488,23 +511,11 @@ public class MainActivity extends AppCompatActivity {
         protected Integer doInBackground(String... strings) {
             do {
                 try {
-                    databaseReferenceAmigo.keepSynced(false);
-                    databaseReferenceUsuario.keepSynced(false);
-                } catch (NullPointerException e) {
-
-                }
-                try {
-                    sleep(10000);
+                    sleep(6000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                try {
-                    databaseReferenceAmigo.keepSynced(true);
-                    databaseReferenceUsuario.keepSynced(true);
-                } catch (NullPointerException e) {
-
-                }
-                velocidad = (((pasos - pasosCache) * 6) * multiplicadorPasos) * (0.06f * 3);
+                velocidad = (((pasos - pasosCache) * 10) * multiplicadorPasos) * (0.06f * 3);
                 usuario.setDistancia(usuario.getDistancia() + ((pasos - pasosCache) * multiplicadorPasos) / 1000);
                 usuario.setDistanciaDia(usuario.getDistanciaDia() + ((pasos - pasosCache) * multiplicadorPasos) / 1000);
                 if (velocidad >= 7) {
@@ -554,6 +565,10 @@ public class MainActivity extends AppCompatActivity {
                 databaseReferenceUsuario.child("pasosDia").setValue(0 + "");
                 databaseReferenceUsuario.child("distanciaDia").setValue(0 + "");
                 databaseReferenceUsuario.child("ultimaFecha").setValue(new Usuario().getUltimaFecha());
+            }
+
+            if (sonido) {
+                ReproducirSonido();
             }
 
         }

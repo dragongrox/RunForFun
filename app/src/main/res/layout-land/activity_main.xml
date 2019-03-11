@@ -6,11 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/fondo">
 
 
         <EditText
@@ -18,26 +17,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:ems="10"
             android:enabled="false"
             android:inputType="textPersonName"
             android:text="@string/nombre"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toTopOf="@+id/editTextAltura"
+            app:layout_constraintStart_toEndOf="@+id/imageView" />
 
         <EditText
             android:id="@+id/editTextAltura"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
             android:ems="10"
             android:enabled="false"
             android:inputType="number"
             android:text="@string/altura"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextNombre" />
+            app:layout_constraintStart_toEndOf="@+id/imageView"
+            tools:layout_editor_absoluteY="182dp" />
 
         <EditText
             android:id="@+id/editTextPeso"
@@ -49,7 +47,7 @@
             android:enabled="false"
             android:inputType="number"
             android:text="@string/peso"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imageView"
             app:layout_constraintTop_toBottomOf="@+id/editTextAltura" />
 
         <ImageView
@@ -58,13 +56,14 @@
             android:layout_height="100dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="@+id/buttonEditar"
-            app:layout_constraintStart_toStartOf="@+id/buttonEditar"
-            app:layout_constraintTop_toBottomOf="@+id/buttonEditar" />
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/buttonEditar"
-            android:layout_width="wrap_content"
+            android:layout_width="89dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:onClick="OnClicEditarCampos"
@@ -83,8 +82,8 @@
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/editTextNombre"
-            app:layout_constraintTop_toTopOf="@+id/editTextNombre">
+            app:layout_constraintStart_toEndOf="@+id/editTextAltura"
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/textViewDistancia"
@@ -207,6 +206,13 @@
                 android:text="@string/cerrarSesion"
                 android:textAlignment="center" />
 
+            <Button
+                android:id="@+id/buttonPaginaWeb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="irAlSitioclick"
+                android:text="@string/paginaWeb" />
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
@@ -215,7 +221,10 @@
                 android:choiceMode="singleChoice"
                 android:divider="@android:color/transparent"
                 android:dividerHeight="0dp"
-                tools:listitem="@layout/recycler_view_item" />
+                tools:listitem="@layout/recycler_view_item">
+
+            </android.support.v7.widget.RecyclerView>
+
         </LinearLayout>
 
     </android.support.design.widget.NavigationView>

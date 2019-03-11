@@ -21,4 +21,5 @@
     <string name="errorAmigoExistente">You already have this user as a friend</string>
     <string name="errorNoTienesAmigos">You still do not have friends, add one now !!!</string>
     <string name="errorSiempreTuAmigo">Sir, I will always be your friend ..... but now seriously, you can\'t add your self as friend>: |</string>
+    <string name="paginaWeb">Web page</string>
 </resources>

@@ -20,6 +20,7 @@
     <string name="peso">Peso (en kg)</string>
     <string name="distanciaDia">Distancia recorrida hoy</string>
     <string name="distancia">Distancie en total recorrida</string>
+    <string name="paginaWeb">Pagina Web</string>
     <!-- Errores -->
     <string name="errorNombre">"No es un nombre valido"</string>
     <string name="errorAltura">"No es una altura valida"</string>
