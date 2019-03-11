@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Run For Fun</string>
+    <string name="errorSiempreTuAmigo">サー、私はいつもあなたの友達になります.....しかし今真剣に、あなたはあなたの友達を追加することはできません</string>
+    <string name="errorNoTienesAmigos">あなたはまだ友達がいません、今すぐ友達を追加しましょう！</string>
+    <string name="errorAmigoExistente">このユーザーは既に友達としています</string>
+    <string name="errorPeticionExistente">このユーザーには既にリクエストを送信しています</string>
+    <string name="errorPeso">有効な体重ではありません</string>
+    <string name="errorAltura">有効な高さではありません</string>
+    <string name="errorNombre">有効な名前ではありません</string>
+    <string name="distancia">移動した合計距離</string>
+    <string name="distanciaDia">今日の移動距離</string>
+    <string name="peso">重量（キログラム）</string>
+    <string name="altura">高さ（cm）</string>
+    <string name="buttonEditar">編集する</string>
+    <string name="cerrarSesion">セッションを閉じる</string>
+    <string name="solicitudesrecibidas">受け取った要求</string>
+    <string name="solicitudesEnviadas">送信された要求</string>
+    <string name="pasosDia">今日の対策</string>
+    <string name="pasos">合計で与えられたステップ</string>
+    <string name="caloriasDia">今日のカロリー</string>
+    <string name="calorias">総カロリー</string>
+    <string name="nombre">お名前</string>
+</resources>

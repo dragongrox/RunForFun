@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="errorSiempreTuAmigo">Sir, ich werde immer dein Freund sein ..... aber jetzt kannst du deinen Freund nicht hinzufügen>: |</string>
+    <string name="errorNoTienesAmigos">Sie haben noch keine Freunde, fügen Sie jetzt einen hinzu !!!</string>
+    <string name="errorAmigoExistente">Sie haben diesen Benutzer bereits als Freund</string>
+    <string name="errorPeticionExistente">Sie haben bereits eine Anfrage an diesen Benutzer gesendet</string>
+    <string name="errorPeso">Es ist kein gültiges Gewicht</string>
+    <string name="errorAltura">Es ist keine gültige Höhe</string>
+    <string name="errorNombre">Es ist kein gültiger Name</string>
+    <string name="distancia">Entfernung insgesamt gereist</string>
+    <string name="distanciaDia">Fahrtstrecke heute</string>
+    <string name="peso">Gewicht (in kg)</string>
+    <string name="altura">Höhe (in cm)</string>
+    <string name="buttonEditar">Bearbeiten</string>
+    <string name="cerrarSesion">Sitzung schließen</string>
+    <string name="solicitudesrecibidas">Anfragen erhalten</string>
+    <string name="solicitudesEnviadas">Gesendete Anträge</string>
+    <string name="pasosDia">Schritte heute gemacht</string>
+    <string name="pasos">Schritte insgesamt gegeben</string>
+    <string name="caloriasDia">Kalorien heute</string>
+    <string name="calorias">Kalorien insgesamt</string>
+    <string name="nombre">Name</string>
+</resources>

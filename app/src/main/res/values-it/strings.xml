@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Run For Fun</string>
+    <string name="nombre">nome</string>
+    <string name="calorias">Calorie in totale</string>
+    <string name="caloriasDia">Calorie oggi</string>
+    <string name="pasos">Passi dati in totale</string>
+    <string name="pasosDia">Passi presi oggi</string>
+    <string name="solicitudesEnviadas">Richieste inoltrate</string>
+    <string name="solicitudesrecibidas">Richieste ricevute</string>
+    <string name="cerrarSesion">Chiudi sessione</string>
+    <string name="buttonEditar">modifica</string>
+    <string name="altura">Altezza (in cm)</string>
+    <string name="peso">Peso (in kg)</string>
+    <string name="distanciaDia">Distanza percorsa oggi</string>
+    <string name="distancia">Distancie en total recorrida</string>
+    <string name="errorNombre">Non è un nome valido</string>
+    <string name="errorAltura">Non è un\'altezza valida</string>
+    <string name="errorPeso">Non è un peso valido</string>
+    <string name="errorPeticionExistente">Hai già inviato una richiesta a questo utente</string>
+    <string name="errorAmigoExistente">Hai già questo utente come amico</string>
+    <string name="errorNoTienesAmigos">Non hai ancora amici, aggiungine uno ora !!!</string>
+    <string name="errorSiempreTuAmigo">Signore, sarò sempre tuo amico ..... ma ora sul serio, non puoi aggiungere il tuo amico>: |</string>
+</resources>

@@ -19,17 +19,12 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
             android:ems="10"
             android:enabled="false"
             android:inputType="textPersonName"
             android:text="@string/nombre"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.38" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
             android:id="@+id/editTextAltura"
@@ -37,12 +32,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
             android:ems="10"
             android:enabled="false"
             android:inputType="number"
             android:text="@string/altura"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextNombre" />
 
@@ -52,12 +45,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
             android:ems="10"
             android:enabled="false"
             android:inputType="number"
             android:text="@string/peso"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextAltura" />
 
@@ -66,21 +57,21 @@
             android:layout_width="160dp"
             android:layout_height="100dp"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/buttonEditar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="@+id/buttonEditar"
+            app:layout_constraintStart_toStartOf="@+id/buttonEditar"
+            app:layout_constraintTop_toBottomOf="@+id/buttonEditar" />
 
         <Button
             android:id="@+id/buttonEditar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:onClick="OnClicEditarCampos"
             android:text="@string/buttonEditar"
-            app:layout_constraintBottom_toTopOf="@+id/editTextNombre"
-            app:layout_constraintEnd_toEndOf="@+id/imageView"
-            app:layout_constraintStart_toStartOf="@+id/imageView" />
+            app:layout_constraintEnd_toEndOf="@+id/editTextPeso"
+            app:layout_constraintStart_toStartOf="@+id/editTextPeso"
+            app:layout_constraintTop_toBottomOf="@+id/editTextPeso" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -92,8 +83,8 @@
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextPeso">
+            app:layout_constraintStart_toEndOf="@+id/editTextNombre"
+            app:layout_constraintTop_toTopOf="@+id/editTextNombre">
 
             <TextView
                 android:id="@+id/textViewDistancia"
