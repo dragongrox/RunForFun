@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -69,7 +70,8 @@ public class EscanerQR extends AppCompatActivity implements ZXingScannerView.Res
         //inicializamos el usuario amigo
         Usuario usuarioAmigo = new Usuario();
         //obtenemos las solicitudes recibidas del usuario amigo para añadir una nuestra
-        MainActivity.databaseReferenceAmigo = MainActivity.database.getReference(nombreAmigo);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        MainActivity.databaseReferenceAmigo = database.getReference(nombreAmigo);
         MainActivity.databaseReferenceAmigo.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -93,45 +95,50 @@ public class EscanerQR extends AppCompatActivity implements ZXingScannerView.Res
 
             }
         });
-        //comprobamos que el amigo no este ya añadido
-        if (!MainActivity.usuario.getAmigos().contains(nombreAmigo)) {
-            //comprobamos el estado de las solicitudes
-            if (MainActivity.usuario.getSolicitudesRecibidas().contains(nombreAmigo)) {
-                // por desarrollar (se añaden sus id en el apartado de amigos y eliminan las solicitudes
-                if (MainActivity.usuario.getAmigos().equals("n")) {
-                    MainActivity.databaseReferenceUsuario.child("amigos").setValue(nombreAmigo + "@");
-                } else {
-                    MainActivity.databaseReferenceUsuario.child("amigos").setValue(MainActivity.usuario.getAmigos() + nombreAmigo + "@");
-                }
+        //comprobamos que el usuario no seamos nosotros mismos
+        if (!nombreAmigo.equals(MainActivity.nombreUsuario)) {
+            //comprobamos que el amigo no este ya añadido o que sea nuestro nombre
+            if (!MainActivity.usuario.getAmigos().contains(nombreAmigo)) {
+                //comprobamos el estado de las solicitudes
+                if (MainActivity.usuario.getSolicitudesRecibidas().contains(nombreAmigo)) {
+                    // por desarrollar (se añaden sus id en el apartado de amigos y eliminan las solicitudes
+                    if (MainActivity.usuario.getAmigos().equals("n")) {
+                        MainActivity.databaseReferenceUsuario.child("amigos").setValue(nombreAmigo + "@");
+                    } else {
+                        MainActivity.databaseReferenceUsuario.child("amigos").setValue(MainActivity.usuario.getAmigos() + nombreAmigo + "@");
+                    }
 
-                if (usuarioAmigo.getAmigos().equals("n")) {
-                    MainActivity.databaseReferenceAmigo.child("amigos").setValue(MainActivity.nombreUsuario + "@");
+                    if (usuarioAmigo.getAmigos().equals("n")) {
+                        MainActivity.databaseReferenceAmigo.child("amigos").setValue(MainActivity.nombreUsuario + "@");
+                    } else {
+                        MainActivity.databaseReferenceAmigo.child("amigos").setValue(usuarioAmigo.getAmigos() + MainActivity.nombreUsuario + "@");
+                    }
+                    MainActivity.databaseReferenceUsuario.child("solicitudesRecibidas").setValue(palabraEliminar(MainActivity.usuario.getAmigos(), (nombreAmigo + "@")));
+                    MainActivity.databaseReferenceAmigo.child("solicitudesEnviadas").setValue(palabraEliminar(usuarioAmigo.getAmigos(), (MainActivity.nombreUsuario + "@")));
+                } else if (usuarioAmigo.getSolicitudesRecibidas().contains(MainActivity.nombreUsuario)) {
+                    //el usuario ya le envio la solicitud
+                    Toast.makeText(this, getResources().getString(R.string.errorPeticionExistente), Toast.LENGTH_SHORT).show();
+                } else if (usuarioAmigo.getSolicitudesRecibidas().equals("n")) {
+                    //en el caso de que no haya
+                    MainActivity.databaseReferenceAmigo.child("solicitudesRecibidas").setValue(MainActivity.nombreUsuario + "@");
+                    if (MainActivity.usuario.getSolicitudesRecibidas().equals("n")) {
+                        MainActivity.databaseReferenceUsuario.child("solicitudesEnviadas").setValue(nombreAmigo + "@");
+                    } else {
+                        MainActivity.databaseReferenceUsuario.child("solicitudesEnviadas").setValue(MainActivity.usuario.getSolicitudesRecibidas() + nombreAmigo + "@");
+                    }
                 } else {
-                    MainActivity.databaseReferenceAmigo.child("amigos").setValue(usuarioAmigo.getAmigos() + MainActivity.nombreUsuario + "@");
-                }
-                MainActivity.databaseReferenceUsuario.child("solicitudesRecibidas").setValue(palabraEliminar(MainActivity.usuario.getAmigos(), (nombreAmigo + "@")));
-                MainActivity.databaseReferenceAmigo.child("solicitudesEnviadas").setValue(palabraEliminar(usuarioAmigo.getAmigos(), (MainActivity.nombreUsuario + "@")));
-            } else if (usuarioAmigo.getSolicitudesRecibidas().contains(MainActivity.nombreUsuario)) {
-                //el usuario ya le envio la solicitud
-                Toast.makeText(this, getResources().getString(R.string.errorPeticionExistente), Toast.LENGTH_SHORT).show();
-            } else if (usuarioAmigo.getSolicitudesRecibidas().equals("n")) {
-                //en el caso de que no haya
-                MainActivity.databaseReferenceAmigo.child("solicitudesRecibidas").setValue(MainActivity.nombreUsuario + "@");
-                if (MainActivity.usuario.getSolicitudesRecibidas().equals("n")) {
-                    MainActivity.databaseReferenceUsuario.child("solicitudesEnviadas").setValue(nombreAmigo + "@");
-                } else {
-                    MainActivity.databaseReferenceUsuario.child("solicitudesEnviadas").setValue(MainActivity.usuario.getSolicitudesRecibidas() + nombreAmigo + "@");
+                    MainActivity.databaseReferenceAmigo.child("solicitudesRecibidas").setValue(usuarioAmigo.getSolicitudesEnviadas() + MainActivity.nombreUsuario + "@");
+                    if (MainActivity.usuario.getSolicitudesRecibidas().equals("n")) {
+                        MainActivity.databaseReferenceUsuario.child("solicitudesEnviadas").setValue(nombreAmigo + "@");
+                    } else {
+                        MainActivity.databaseReferenceUsuario.child("solicitudesEnviadas").setValue(MainActivity.usuario.getSolicitudesRecibidas() + nombreAmigo + "@");
+                    }
                 }
             } else {
-                MainActivity.databaseReferenceAmigo.child("solicitudesRecibidas").setValue(usuarioAmigo.getSolicitudesEnviadas() + MainActivity.nombreUsuario + "@");
-                if (MainActivity.usuario.getSolicitudesRecibidas().equals("n")) {
-                    MainActivity.databaseReferenceUsuario.child("solicitudesEnviadas").setValue(nombreAmigo + "@");
-                } else {
-                    MainActivity.databaseReferenceUsuario.child("solicitudesEnviadas").setValue(MainActivity.usuario.getSolicitudesRecibidas() + nombreAmigo + "@");
-                }
+                Toast.makeText(this, getResources().getString(R.string.errorAmigoExistente), Toast.LENGTH_SHORT).show();
             }
         } else {
-            Toast.makeText(this, getResources().getString(R.string.errorAmigoExistente), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.errorSiempreTuAmigo), Toast.LENGTH_SHORT).show();
         }
 
 
@@ -142,7 +149,7 @@ public class EscanerQR extends AppCompatActivity implements ZXingScannerView.Res
         zXingScannerView.stopCamera();
 
         //Cambia el activity
-        setContentView(R.layout.activity_main);
+        finish();
 
     }
 

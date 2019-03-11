@@ -2,7 +2,6 @@ package com.example.runforfun;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -10,9 +9,13 @@ import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,8 +34,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import static java.lang.Thread.sleep;
@@ -57,11 +63,12 @@ public class MainActivity extends AppCompatActivity {
     float velocidad = 0;
     //imagenGif
     int contImag = 0;
+    ImageView imageView;
 
     private static final int RC_SIGN_IN = 123;
 
+    //campos main
     FirebaseUser user;
-    Drawable[] almacenImag;
     TextView textViewPasosDia,
             textViewPasos,
             textViewCalorias,
@@ -74,12 +81,53 @@ public class MainActivity extends AppCompatActivity {
             editTextPeso;
     boolean mainActivo = true;
 
+    //campos menu lateral
+    List<String> listaAmigos;
+    DrawerLayout drawerLayoutAmigos;
+    RecyclerView recyclerViewAmigos;
+
+
     //formateador de los decimales
     DecimalFormat df;
 
+    public static void EliminarAmigo(String nombreAmigo) {
+        Usuario usuarioAmigo = new Usuario();
+        databaseReferenceAmigo = database.getReference(nombreAmigo);
+        databaseReferenceAmigo.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                usuarioAmigo.setAmigos(dataSnapshot.child("amigos").getValue().toString());
+                usuarioAmigo.setCalorias(Float.parseFloat(dataSnapshot.child("calorias").getValue().toString()));
+                usuarioAmigo.setCaloriasDia(Float.parseFloat(dataSnapshot.child("caloriasDia").getValue().toString()));
+                usuarioAmigo.setNombre(dataSnapshot.child("nombre").getValue().toString());
+                usuarioAmigo.setPasos(Integer.parseInt(dataSnapshot.child("pasos").getValue().toString()));
+                usuarioAmigo.setPasosDia(Integer.parseInt(dataSnapshot.child("pasosDia").getValue().toString()));
+                usuarioAmigo.setSolicitudesEnviadas(dataSnapshot.child("solicitudesEnviadas").getValue().toString());
+                usuarioAmigo.setSolicitudesRecibidas(dataSnapshot.child("solicitudesRecibidas").getValue().toString());
+                usuarioAmigo.setUltimaFecha(dataSnapshot.child("ultimaFecha").getValue().toString());
+                usuarioAmigo.setAltura(Integer.parseInt(dataSnapshot.child("altura").getValue().toString()));
+                usuarioAmigo.setPeso(Integer.parseInt(dataSnapshot.child("peso").getValue().toString()));
+                usuarioAmigo.setDistancia(Double.parseDouble(dataSnapshot.child("distancia").getValue().toString()));
+                usuarioAmigo.setDistanciaDia(Double.parseDouble(dataSnapshot.child("distanciaDia").getValue().toString()));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        if (EscanerQR.palabraEliminar(usuario.getAmigos(), nombreAmigo + "@").trim().isEmpty()) {
+            databaseReferenceUsuario.child("amigos").setValue("n");
+            databaseReferenceAmigo.child("amigos").setValue("n");
+        } else {
+            databaseReferenceUsuario.child("amigos").setValue(EscanerQR.palabraEliminar(usuario.getAmigos(), nombreAmigo + "@"));
+            databaseReferenceAmigo.child("amigos").setValue(EscanerQR.palabraEliminar(usuarioAmigo.getAmigos(), nombreUsuario + "@"));
+        }
+    }
+
     @Override
     protected void onStop() {
-        databaseReferenceUsuario.setValue(usuario);
+        database = null;
         mainActivo = false;
         super.onStop();
 
@@ -89,8 +137,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        almacenImag = new Drawable[]{getDrawable(R.drawable.g0), getDrawable(R.drawable.g1), getDrawable(R.drawable.g2), getDrawable(R.drawable.g3), getDrawable(R.drawable.g4), getDrawable(R.drawable.g5)};
+        //habilitamos la persistencia en el disco de firebase
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        database = FirebaseDatabase.getInstance();
+        databaseReferenceAmigo = database.getReference(nombreUsuario);
 
         //formateador de los decimales
         df = new DecimalFormat("#.##");
@@ -98,15 +148,17 @@ public class MainActivity extends AppCompatActivity {
 
         //inicializacion de los campos
         textViewPasosDia = findViewById(R.id.textViewPasosDia);
-        textViewCalorias = findViewById(R.id.textViewCalorias);
+        textViewCalorias = findViewById(R.id.textViewAmigoCalorias);
         textViewCaloriasDia = findViewById(R.id.textViewCaloriasDia);
-        textViewPasos = findViewById(R.id.textViewPasos);
+        textViewPasos = findViewById(R.id.textViewAmigoPasos);
         textViewDistancia = findViewById(R.id.textViewDistancia);
         textViewDistanciaDia = findViewById(R.id.textViewDistanciaDia);
         textViewVelocidad = findViewById(R.id.textViewVelocidad);
         editTextNombre = findViewById(R.id.editTextNombre);
         editTextAltura = findViewById(R.id.editTextAltura);
         editTextPeso = findViewById(R.id.editTextPeso);
+        imageView = findViewById(R.id.imageView);
+
 
         //Autentificacion
         FirebaseApp.initializeApp(this);
@@ -143,11 +195,37 @@ public class MainActivity extends AppCompatActivity {
                 textViewCaloriasDia.setText(getResources().getString(R.string.caloriasDia) + ": \t" + df.format(usuario.getCaloriasDia()));
                 textViewDistancia.setText(getResources().getString(R.string.distancia) + ": " + df.format(usuario.getDistancia()));
                 textViewDistanciaDia.setText(getResources().getString(R.string.distanciaDia) + ": " + df.format(usuario.getDistanciaDia()));
-                textViewVelocidad.setText(velocidad + "km/h");
+
                 //actualizamos la informacion en firebas cada 100 pasos y recalculamos las calorias
                 if (pasos > (pasosActualizados + 100))
                     databaseReferenceUsuario.setValue(usuario);
+                switch (contImag) {
+                    case 0:
+                        imageView.setImageResource(R.drawable.g0);
+                        contImag++;
+                        break;
+                    case 1:
+                        imageView.setImageResource(R.drawable.g1);
+                        contImag++;
+                        break;
+                    case 2:
+                        imageView.setImageResource(R.drawable.g2);
+                        contImag++;
+                        break;
+                    case 3:
+                        imageView.setImageResource(R.drawable.g3);
+                        contImag++;
+                        break;
+                    case 4:
+                        imageView.setImageResource(R.drawable.g4);
+                        contImag++;
+                        break;
+                    case 5:
+                        imageView.setImageResource(R.drawable.g5);
+                        contImag = 0;
+                        break;
 
+                }
 
             }
 
@@ -159,8 +237,25 @@ public class MainActivity extends AppCompatActivity {
         sensorManager.registerListener(andar, sensor, SensorManager.SENSOR_DELAY_GAME);
 
         new SincronizacionDatosAsyncTask().execute();
+
+        dibujarListaAmigos();
+
+
     }
 
+    public void dibujarListaAmigos() {
+        String[] amigos = usuario.amigos.split("@");
+        listaAmigos = Arrays.asList(amigos);
+        System.out.println("asdasd");
+
+        drawerLayoutAmigos = findViewById(R.id.drawer_layout);
+        recyclerViewAmigos = findViewById(R.id.recyclerView);
+
+        //creamos el adaptador para la lista
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        recyclerViewAmigos.setLayoutManager(llm);
+        recyclerViewAmigos.setAdapter(new RVAdapter(listaAmigos));
+    }
 
     /**
      * metodo para leer usuario.
@@ -170,8 +265,10 @@ public class MainActivity extends AppCompatActivity {
         String[] emailPartido = user.getEmail().split("@");
         nombreUsuario = emailPartido[0];
 
+        usuario = new Usuario();
         database = FirebaseDatabase.getInstance();
         databaseReferenceUsuario = database.getReference(nombreUsuario);
+
         databaseReferenceUsuario.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -215,6 +312,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 
     /**
      * Creacion del intent para el inicio de sesion
@@ -275,6 +373,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
         // [END auth_fui_signout]
+        System.exit(0);
     }
 
     /**
@@ -389,11 +488,23 @@ public class MainActivity extends AppCompatActivity {
         protected Integer doInBackground(String... strings) {
             do {
                 try {
-                    sleep(6000);
+                    databaseReferenceAmigo.keepSynced(false);
+                    databaseReferenceUsuario.keepSynced(false);
+                } catch (NullPointerException e) {
+
+                }
+                try {
+                    sleep(10000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                velocidad = (((pasos - pasosCache) * 10) * multiplicadorPasos) * 0.06f;
+                try {
+                    databaseReferenceAmigo.keepSynced(true);
+                    databaseReferenceUsuario.keepSynced(true);
+                } catch (NullPointerException e) {
+
+                }
+                velocidad = (((pasos - pasosCache) * 6) * multiplicadorPasos) * (0.06f * 3);
                 usuario.setDistancia(usuario.getDistancia() + ((pasos - pasosCache) * multiplicadorPasos) / 1000);
                 usuario.setDistanciaDia(usuario.getDistanciaDia() + ((pasos - pasosCache) * multiplicadorPasos) / 1000);
                 if (velocidad >= 7) {
@@ -404,7 +515,7 @@ public class MainActivity extends AppCompatActivity {
                     usuario.caloriasDia += 0.048f * (usuario.getPeso() * 2.2) * 0.25f;
                 }
                 pasosCache = pasos;
-
+                publishProgress(1);
             } while (mainActivo);
             return 0;
         }
@@ -425,6 +536,25 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
+            //periodicamente actualizaremos la lista de amigos
+            dibujarListaAmigos();
+            //actualizamos la velocidad
+            textViewVelocidad.setText(velocidad + "km/h");
+            //comprobamos el cambio de dia para reiniciar las calorias, los pasos y la distancia de ese dia
+            SimpleDateFormat formatoDelTexto = new SimpleDateFormat("dd/MM/yyyy");
+            Date fechaAlmacenada = null, fechaActual = null;
+            try {
+                fechaAlmacenada = formatoDelTexto.parse(usuario.getUltimaFecha());
+                fechaActual = formatoDelTexto.parse(new Usuario().getUltimaFecha());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            if (fechaActual.compareTo(fechaAlmacenada) != 0) {
+                databaseReferenceUsuario.child("caloriasDia").setValue(0 + "");
+                databaseReferenceUsuario.child("pasosDia").setValue(0 + "");
+                databaseReferenceUsuario.child("distanciaDia").setValue(0 + "");
+                databaseReferenceUsuario.child("ultimaFecha").setValue(new Usuario().getUltimaFecha());
+            }
 
         }
     }

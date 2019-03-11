@@ -1,6 +1,9 @@
 package com.example.runforfun;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class Usuario {
 
@@ -8,10 +11,10 @@ public class Usuario {
             nombre = "usarioNuevo",
             solicitudesEnviadas = "n",
             solicitudesRecibidas = "n",
-            ultimaFecha = String.valueOf(new Date());
+            ultimaFecha;
     int pasos = 0,
             pasosDia = 0,
-            altura = 0,
+            altura = 160,
             peso = 70;
     double distanciaDia = 0,
             distancia = 0;
@@ -20,6 +23,12 @@ public class Usuario {
             caloriasDia = 0;
 
     public Usuario() {
+        //obtenemos la fecha actual
+        Calendar calendario = GregorianCalendar.getInstance();
+        Date fecha = calendario.getTime();
+        System.out.println(fecha);
+        SimpleDateFormat formatoDeFecha = new SimpleDateFormat("dd/MM/yyyy");
+        ultimaFecha = (formatoDeFecha.format(fecha));
 
     }
 

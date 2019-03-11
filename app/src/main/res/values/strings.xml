@@ -26,6 +26,8 @@
     <string name="errorPeso">"No es un peso valido"</string>
     <string name="errorPeticionExistente">Ya has enviado una solicitud a este usuario</string>
     <string name="errorAmigoExistente">Ya tienes de amigo a este usuario</string>
+    <string name="errorNoTienesAmigos">Aun no tienes amigos, agrega uno ya !!!</string>
+    <string name="errorSiempreTuAmigo">Señor, yo simpre seré tu amigo..... pero ahora enserio, no puedes agregarte de amigo >:|</string>
 
 
 </resources>
