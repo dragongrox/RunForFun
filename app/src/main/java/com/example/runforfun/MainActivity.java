@@ -155,7 +155,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        databaseReferenceUsuario.setValue(usuario);
+        if (usuario != null && databaseReferenceUsuario != null)
+            databaseReferenceUsuario.setValue(usuario);
     }
 
     /**
@@ -165,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         //habilitamos la persistencia en el disco de firebase
         database = FirebaseDatabase.getInstance();
         databaseReferenceAmigo = database.getReference(nombreUsuario);
