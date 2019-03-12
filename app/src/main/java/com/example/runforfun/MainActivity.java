@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
     //campos main
     FirebaseUser user;
+    static FirebaseUser userCache;
     TextView textViewPasosDia,
             textViewPasos,
             textViewCalorias,
@@ -139,14 +140,27 @@ public class MainActivity extends AppCompatActivity {
         sonido = false;
     }
 
+    /**
+     * aqui controlamos el cierre de la aplicacion
+     */
     @Override
     protected void onStop() {
+        databaseReferenceUsuario.setValue(usuario);
         database = null;
         mainActivo = false;
         super.onStop();
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        databaseReferenceUsuario.setValue(usuario);
+    }
+
+    /**
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -172,15 +186,18 @@ public class MainActivity extends AppCompatActivity {
         editTextPeso = findViewById(R.id.editTextPeso);
         imageView = findViewById(R.id.imageView);
 
-
-        //Autentificacion
         FirebaseApp.initializeApp(this);
-        createSignInIntent();
 
         //Obtencion del Usuario
         if (user == null) {
-            //en el caso de que aun no este inicializado y la cuenta ya este iniciada volvemos a instanciar al Usuario
-            user = FirebaseAuth.getInstance().getCurrentUser();
+            if (userCache == null) {
+                //Autentificacion
+                createSignInIntent();
+
+            } else {
+                user = userCache;
+            }
+
         }
 
         //Creacion y configuracion del sensor de podometro
@@ -197,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSensorChanged(SensorEvent event) {
                 //cada vez que de un paso se sumaran los pasos
                 pasos = (usuario.getPasos());
-                pasosDia = (usuario.getPasos());
+                pasosDia = (usuario.getPasosDia());
                 pasos++;
                 usuario.setPasos(pasos);
                 pasosDia++;
@@ -358,6 +375,7 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
                 user = FirebaseAuth.getInstance().getCurrentUser();
+                userCache = user;
                 leerUsuario();
                 // ...
             } else {
@@ -365,6 +383,7 @@ public class MainActivity extends AppCompatActivity {
                 // sign-in flow using the back button. Otherwise check
                 // response.getError().getErrorCode() and handle the error.
                 // ...
+                System.exit(0);
             }
         }
     }
@@ -377,6 +396,7 @@ public class MainActivity extends AppCompatActivity {
     public void signOut(View view) {
         //guardamos los datos
         databaseReferenceUsuario.setValue(usuario);
+        userCache = null;
         // [START auth_fui_signout]
         AuthUI.getInstance()
                 .signOut(this)
@@ -386,7 +406,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
         // [END auth_fui_signout]
-        System.exit(0);
+
     }
 
     /**
