@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Run For Fun</string>
     <string name="nombre">nome</string>
     <string name="calorias">Calorie in totale</string>
     <string name="caloriasDia">Calorie oggi</string>
@@ -22,4 +21,5 @@
     <string name="errorNoTienesAmigos">Non hai ancora amici, aggiungine uno ora !!!</string>
     <string name="errorSiempreTuAmigo">Signore, sarò sempre tuo amico ..... ma ora sul serio, non puoi aggiungere il tuo amico>: |</string>
     <string name="paginaWeb">sito web</string>
+    <string name="amigosActividad">Questa è l\'attività dei tuoi amici</string>
 </resources>

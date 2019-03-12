@@ -5,6 +5,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+/**
+ * clase que se encarga de representar y contener todos los datos de un usuario
+ */
 public class Usuario {
 
     String amigos = "n",

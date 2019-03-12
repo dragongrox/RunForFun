@@ -90,17 +90,31 @@ public class MainActivity extends AppCompatActivity {
     DrawerLayout drawerLayoutAmigos;
     RecyclerView recyclerViewAmigos;
 
+    //Declaracion del AsyncTask
+    SincronizacionDatosAsyncTask sincronizacionDatosAsyncTask;
 
     //formateador de los decimales
     DecimalFormat df;
 
+    //variable semaforo que controla la finalizacion del AsyncTask
+    boolean asyncTaskTerminado = false;
+
+    /**
+     * metodo que se encarga de eliminar el amigo que tenga el nombre pasado por parametro
+     *
+     * @param nombreAmigo nombre del amigo
+     */
     public static void EliminarAmigo(String nombreAmigo) {
         Usuario usuarioAmigo = new Usuario();
+        //marcamos el semaforo para reproducir el sonido que en la siguiente actualizacion del AsyncTask emitira el sonido y actualizara el recycled view del menu lateral
         sonido = true;
+        //obtenemos al nodo del amigo
         databaseReferenceAmigo = database.getReference(nombreAmigo);
+        //inicializamos los listeners para leer sus campos y asi detectar solo el nombre del amigo que queramos borrar
         databaseReferenceAmigo.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //obtenemos los campos y los almacenamos en el objeto usuarioAmigo
                 usuarioAmigo.setAmigos(dataSnapshot.child("amigos").getValue().toString());
                 usuarioAmigo.setCalorias(Float.parseFloat(dataSnapshot.child("calorias").getValue().toString()));
                 usuarioAmigo.setCaloriasDia(Float.parseFloat(dataSnapshot.child("caloriasDia").getValue().toString()));
@@ -121,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        //comprobamos si este es el ultimo amigo que tenemos o quedan mas, para no dejar el campo vacio y poner el caracter de n señalando que eeste campo esta vacio
         if (EscanerQR.palabraEliminar(usuario.getAmigos(), nombreAmigo + "@").trim().isEmpty()) {
             databaseReferenceUsuario.child("amigos").setValue("n");
             databaseReferenceAmigo.child("amigos").setValue("n");
@@ -130,6 +145,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * metodo que reproduce sonido al invocarlo
+     */
     public void ReproducirSonido() {
         //Sonidos
         MediaPlayer mediaPlayer;
@@ -152,6 +170,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Etapa del ciclo de la vida que corresponde a la pausa cuando dejamos la aplicacion en segundo plano
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -160,6 +181,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Etapa del ciclo de la vida que corresponde a traer la aplicacion al primer plano
+     */
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
+        if (asyncTaskTerminado) {
+            sincronizacionDatosAsyncTask = new SincronizacionDatosAsyncTask();
+            sincronizacionDatosAsyncTask.execute();
+        }
+    }
+
+    /**
+     * Etapa del ciclo de la vida que corresponde al inicio de este Activity
      * @param savedInstanceState
      */
     @Override
@@ -210,7 +245,9 @@ public class MainActivity extends AppCompatActivity {
         if (sensor == null) {
             Toast.makeText(this, "No tienes podómetro", Toast.LENGTH_LONG).show();
         }
+        //inicializacion del usuario
         usuario = new Usuario();
+        //inicializacion del sensor de podometro
         andar = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
@@ -265,15 +302,18 @@ public class MainActivity extends AppCompatActivity {
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
             }
         };
-
+        //puesta en marcha del sensor podometro
         sensorManager.registerListener(andar, sensor, SensorManager.SENSOR_DELAY_GAME);
-
-        new SincronizacionDatosAsyncTask().execute();
-
+        //creacion y ejecucion de AsyncTask que se encarga de actualizar la informacion y calcular las calorias con el paso del tiempo
+        sincronizacionDatosAsyncTask = new SincronizacionDatosAsyncTask();
+        sincronizacionDatosAsyncTask.execute();
+        //dibujamos la lista de amigos
         dibujarListaAmigos();
 
 
     }
+
+
 
     public void dibujarListaAmigos() {
         String[] amigos = usuario.amigos.split("@");
@@ -297,10 +337,11 @@ public class MainActivity extends AppCompatActivity {
         String[] emailPartido = user.getEmail().split("@");
         nombreUsuario = emailPartido[0];
 
+        //inicializamos todo_lo referente a la base de datos firebase
         usuario = new Usuario();
         database = FirebaseDatabase.getInstance();
         databaseReferenceUsuario = database.getReference(nombreUsuario);
-
+        //creamos los listeners para leer los datos
         databaseReferenceUsuario.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -366,7 +407,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    // [START auth_fui_result]
+    /**
+     * metodo que recibe el resultado del Activiti de inicio de sesion
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -375,16 +421,15 @@ public class MainActivity extends AppCompatActivity {
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
             if (resultCode == RESULT_OK) {
-                // Successfully signed in
+                // Si se ha iniciado correctamente pasamos el id a la variable user
                 user = FirebaseAuth.getInstance().getCurrentUser();
+                // tambien pasamos esta al cache que se encargara de mantener nuestro usuario entre cambios de layouts debido al giro de la pantalla
                 userCache = user;
+                //actualizamos los datos del usuario en la parte grafica
                 leerUsuario();
                 // ...
             } else {
-                // Sign in failed. If response is null the user canceled the
-                // sign-in flow using the back button. Otherwise check
-                // response.getError().getErrorCode() and handle the error.
-                // ...
+                //salimos si no se ha iniciado sesion
                 System.exit(0);
             }
         }
@@ -392,12 +437,12 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Desconecta de la cuenta
-     *
      * @param view view del main
      */
     public void signOut(View view) {
         //guardamos los datos
         databaseReferenceUsuario.setValue(usuario);
+        //eliminamos el cache
         userCache = null;
         // [START auth_fui_signout]
         AuthUI.getInstance()
@@ -494,9 +539,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Privacidad y terminos
+     * metod que muestra los terminos a los que estan sujetos los usuarios respecto a su privacidad
      */
-    public void privacyAndTerms() {
+    public void privacyAndTerms(View view) {
         List<AuthUI.IdpConfig> providers = Collections.emptyList();
         // [START auth_fui_pp_tos]
         startActivityForResult(
@@ -504,8 +549,8 @@ public class MainActivity extends AppCompatActivity {
                         .createSignInIntentBuilder()
                         .setAvailableProviders(providers)
                         .setTosAndPrivacyPolicyUrls(
-                                "https://example.com/terms.html",
-                                "https://example.com/privacy.html")
+                                "https://policies.google.com/terms?hl=es-419",
+                                "https://policies.google.com/terms?hl=es-419")
                         .build(),
                 RC_SIGN_IN);
         // [END auth_fui_pp_tos]
@@ -529,6 +574,12 @@ public class MainActivity extends AppCompatActivity {
         //distancia en m que se recorre al dar un paso
         float multiplicadorPasos;
 
+        /**
+         * Este metodo servira para hacer reiteradas actualizaciones sobre los dados del usuario
+         *
+         * @param strings
+         * @return
+         */
         @Override
         protected Integer doInBackground(String... strings) {
             do {
@@ -541,11 +592,11 @@ public class MainActivity extends AppCompatActivity {
                 usuario.setDistancia(usuario.getDistancia() + ((pasos - pasosCache) * multiplicadorPasos) / 1000);
                 usuario.setDistanciaDia(usuario.getDistanciaDia() + ((pasos - pasosCache) * multiplicadorPasos) / 1000);
                 if (velocidad >= 7) {
-                    usuario.calorias += 0.048f * (usuario.getPeso() * 2.2) * 0.25f;
-                    usuario.caloriasDia += 0.048f * (usuario.getPeso() * 2.2) * 0.25f;
-                } else if (velocidad > 4) {
-                    usuario.calorias += 0.029f * (usuario.getPeso() * 2.2) * 0.25f;
-                    usuario.caloriasDia += 0.048f * (usuario.getPeso() * 2.2) * 0.25f;
+                    usuario.calorias += 0.048f * (usuario.getPeso() * 2.2f) * 0.25f;
+                    usuario.caloriasDia += 0.048f * (usuario.getPeso() * 2.2f) * 0.25f;
+                } else if (velocidad > 3) {
+                    usuario.calorias += 0.029f * (usuario.getPeso() * 2.2f) * 0.25f;
+                    usuario.caloriasDia += 0.048f * (usuario.getPeso() * 2.2f) * 0.25f;
                 }
                 pasosCache = pasos;
                 publishProgress(1);
@@ -553,19 +604,31 @@ public class MainActivity extends AppCompatActivity {
             return 0;
         }
 
+        /**
+         * metodo que se encarga de preparar la informacion necesario (el multiplicador que va en base a la altura del usuario)
+         */
         @Override
         protected void onPreExecute() {
             if (usuario.altura > 170)
                 multiplicadorPasos = 0.7f;
             else
                 multiplicadorPasos = 0.6f;
+            asyncTaskTerminado=false;
         }
 
+        /**
+         * Tareas tras finalizar el AsyncTask, en nuestro caso indicamos en la variable semaforo que el asinctask se ha terminado
+         * @param integer
+         */
         @Override
         protected void onPostExecute(Integer integer) {
-
+            asyncTaskTerminado=true;
         }
 
+        /**
+         * este apartado se encargara de actualizar demas datos de la propia interfaz, ya que el metodo do in background no tiene acceso a la interfaz
+         * @param values valor de progreso
+         */
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
@@ -574,6 +637,7 @@ public class MainActivity extends AppCompatActivity {
             //actualizamos la velocidad
             textViewVelocidad.setText(velocidad + "km/h");
             //comprobamos el cambio de dia para reiniciar las calorias, los pasos y la distancia de ese dia
+            //primero convertimos las fechas en formato Date
             SimpleDateFormat formatoDelTexto = new SimpleDateFormat("dd/MM/yyyy");
             Date fechaAlmacenada = null, fechaActual = null;
             try {
@@ -582,16 +646,19 @@ public class MainActivity extends AppCompatActivity {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+            //hacemos al comparacion
             if (fechaActual.compareTo(fechaAlmacenada) != 0) {
                 databaseReferenceUsuario.child("caloriasDia").setValue(0 + "");
                 databaseReferenceUsuario.child("pasosDia").setValue(0 + "");
                 databaseReferenceUsuario.child("distanciaDia").setValue(0 + "");
                 databaseReferenceUsuario.child("ultimaFecha").setValue(new Usuario().getUltimaFecha());
             }
-
+            //si el boolean que se encarga de anunciar la eliinacion de un amigo esta en true se procedera a hacer sonar el sonido
             if (sonido) {
                 ReproducirSonido();
             }
+            if (databaseReferenceUsuario != null)
+                databaseReferenceUsuario.setValue(usuario);
 
         }
     }

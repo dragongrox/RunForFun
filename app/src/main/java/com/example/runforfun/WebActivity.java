@@ -5,6 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+/**
+ * Activity que muestra la paguina web del creador
+ */
 public class WebActivity extends AppCompatActivity {
     WebView webView;
 
@@ -14,7 +17,7 @@ public class WebActivity extends AppCompatActivity {
         setContentView(R.layout.activity_web);
 
         webView = findViewById(R.id.webView);
-
+        //Definimos el link de la pagina
         String URLdestino = "https://dragongroxtime.wordpress.com/";
         //Configuramos el objeto WebView
         webView.setWebViewClient(new WebViewClient());

@@ -26,10 +26,29 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 
 public class EscanerQR extends AppCompatActivity implements ZXingScannerView.ResultHandler {
+    //inicializacionde las variables necesarias
     ImageView imageViewQRPropio;
     Bitmap bitmap;
     private ZXingScannerView zXingScannerView;
 
+    /**
+     * Metodo que elimina una sucecion de caracteres de otra mas larga
+     *
+     * @param frase
+     * @param palabra
+     * @return
+     */
+    public static String palabraEliminar(String frase, String palabra) {
+        if (frase.contains(palabra))
+            return frase.replaceAll(palabra, "");
+        return frase;
+    }
+
+    /**
+     * aqui controlamos la creacion de la activity y la generaciond el codigo QR
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +64,10 @@ public class EscanerQR extends AppCompatActivity implements ZXingScannerView.Res
         generarQRPropio();
     }
 
-
+    /**
+     * metodo que se encarga de iniciar la camara y escanear el codigo QR
+     * @param view
+     */
     public void Escanear(View view) {
         zXingScannerView = new ZXingScannerView(getApplicationContext());
         zXingScannerView.setFormats(ZXingScannerView.ALL_FORMATS);
@@ -56,12 +78,10 @@ public class EscanerQR extends AppCompatActivity implements ZXingScannerView.Res
         zXingScannerView.startCamera();
     }
 
-    public static String palabraEliminar(String frase, String palabra) {
-        if (frase.contains(palabra))
-            return frase.replaceAll(palabra, "");
-        return frase;
-    }
-
+    /**
+     * metodo que se encarga de recibir el codigo de lo que haya escaneado la camara
+     * @param result
+     */
     @Override
     public void handleResult(Result result) {
         //Manejamos el resultado
@@ -153,6 +173,9 @@ public class EscanerQR extends AppCompatActivity implements ZXingScannerView.Res
 
     }
 
+    /**
+     * metodo que genera el codigo QR apartir del id del usuario
+     */
     public void generarQRPropio() {
         try {
             bitmap = TextToImageEncode(MainActivity.nombreUsuario);
@@ -162,6 +185,12 @@ public class EscanerQR extends AppCompatActivity implements ZXingScannerView.Res
         imageViewQRPropio.setImageBitmap(bitmap);
     }
 
+    /**
+     * metodo auxiliar que hace el proceso de la generacion del codigo QR en un Bitmap
+     * @param Value
+     * @return
+     * @throws WriterException
+     */
     private Bitmap TextToImageEncode(String Value) throws WriterException {
         BitMatrix bitMatrix;
         try {

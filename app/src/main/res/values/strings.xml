@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Run For Fun</string>
+    <string name="app_name" translatable="false">Run For Fun</string>
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
     <string name="facebook_application_id" translatable="false">YOUR_APP_ID</string>
     <string name="facebook_login_protocol_scheme" translatable="false">fbYOUR_APP_ID</string>
@@ -21,6 +21,7 @@
     <string name="distanciaDia">Distancia recorrida hoy</string>
     <string name="distancia">Distancia en total recorrida</string>
     <string name="paginaWeb">Pagina Web</string>
+    <string name="amigosActividad">Esta es la actividad de tus amigos</string>
     <!-- Errores -->
     <string name="errorNombre">"No es un nombre valido"</string>
     <string name="errorAltura">"No es una altura valida"</string>
