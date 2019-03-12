@@ -17,25 +17,33 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:ems="10"
             android:enabled="false"
             android:inputType="textPersonName"
             android:text="@string/nombre"
-            app:layout_constraintBottom_toTopOf="@+id/editTextAltura"
-            app:layout_constraintStart_toEndOf="@+id/imageView" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.38" />
 
         <EditText
             android:id="@+id/editTextAltura"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:ems="10"
             android:enabled="false"
             android:inputType="number"
             android:text="@string/altura"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
-            tools:layout_editor_absoluteY="182dp" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextNombre" />
 
         <EditText
             android:id="@+id/editTextPeso"
@@ -43,11 +51,13 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:ems="10"
             android:enabled="false"
             android:inputType="number"
             android:text="@string/peso"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextAltura" />
 
         <ImageView
@@ -55,22 +65,21 @@
             android:layout_width="160dp"
             android:layout_height="100dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toTopOf="@+id/buttonEditar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/buttonEditar"
-            android:layout_width="89dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:onClick="OnClicEditarCampos"
             android:text="@string/buttonEditar"
-            app:layout_constraintEnd_toEndOf="@+id/editTextPeso"
-            app:layout_constraintStart_toStartOf="@+id/editTextPeso"
-            app:layout_constraintTop_toBottomOf="@+id/editTextPeso" />
+            app:layout_constraintBottom_toTopOf="@+id/editTextNombre"
+            app:layout_constraintEnd_toEndOf="@+id/imageView"
+            app:layout_constraintStart_toStartOf="@+id/imageView" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -82,8 +91,8 @@
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/editTextAltura"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextPeso">
 
             <TextView
                 android:id="@+id/textViewDistancia"
@@ -169,63 +178,76 @@
     <android.support.design.widget.NavigationView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="start">
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true">
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <Button
-                android:id="@+id/buttonAniadirAmigo"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="0dp"
-                android:layout_marginStart="0dp"
-                android:layout_marginLeft="0dp"
-                android:layout_marginTop="0dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginRight="0dp"
-                android:layout_marginBottom="0dp"
-                android:onClick="OnClickAniadirAmigo"
-                android:text="+ Amigo"
-                android:textAlignment="center" />
+                android:orientation="vertical">
 
-            <Button
-                android:id="@+id/buttonLogOut"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="0dp"
-                android:layout_marginStart="0dp"
-                android:layout_marginLeft="0dp"
-                android:layout_marginTop="0dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginRight="0dp"
-                android:layout_marginBottom="0dp"
-                android:onClick="signOut"
-                android:text="@string/cerrarSesion"
-                android:textAlignment="center" />
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/amigosActividad"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
-            <Button
-                android:id="@+id/buttonPaginaWeb"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="irAlSitioclick"
-                android:text="@string/paginaWeb" />
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="start"
+                    android:choiceMode="singleChoice"
+                    android:divider="@android:color/transparent"
+                    android:dividerHeight="0dp"
+                    tools:listitem="@layout/recycler_view_item">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="start"
-                android:choiceMode="singleChoice"
-                android:divider="@android:color/transparent"
-                android:dividerHeight="0dp"
-                tools:listitem="@layout/recycler_view_item">
+                </android.support.v7.widget.RecyclerView>
 
-            </android.support.v7.widget.RecyclerView>
+                <Button
+                    android:id="@+id/buttonAniadirAmigo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginRight="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:onClick="OnClickAniadirAmigo"
+                    android:text="+ Amigo"
+                    android:textAlignment="center" />
 
-        </LinearLayout>
+                <Button
+                    android:id="@+id/buttonLogOut"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginRight="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:onClick="signOut"
+                    android:text="@string/cerrarSesion"
+                    android:textAlignment="center" />
+
+                <Button
+                    android:id="@+id/buttonPaginaWeb"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="irAlSitioclick"
+                    android:text="@string/paginaWeb" />
+
+            </LinearLayout>
+        </ScrollView>
 
     </android.support.design.widget.NavigationView>
 </android.support.v4.widget.DrawerLayout>
