@@ -1,6 +1,7 @@
 package com.example.runforfun;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -24,6 +25,7 @@ public class Usuario {
 
     float calorias = 0,
             caloriasDia = 0;
+    ArrayList<Posicion> posiciones = new ArrayList<>();
 
     public Usuario() {
         //obtenemos la fecha actual
@@ -32,10 +34,13 @@ public class Usuario {
         System.out.println(fecha);
         SimpleDateFormat formatoDeFecha = new SimpleDateFormat("dd/MM/yyyy");
         ultimaFecha = (formatoDeFecha.format(fecha));
-
     }
 
-    public Usuario(String amigos, String nombre, String solicitudesEnviadas, String solicitudesRecibidas, String ultimaFecha, float calorias, float caloriasDia, int pasos, int pasosDia, int altura, int peso, double distanciaDia, double distancia) {
+    public Usuario(String amigos, String nombre, String solicitudesEnviadas,
+                   String solicitudesRecibidas, String ultimaFecha, float calorias,
+                   float caloriasDia, int pasos, int pasosDia, int altura, int peso,
+                   double distanciaDia, double distancia, ArrayList<Posicion> posiciones,
+                   ArrayList<String> fechas) {
         this.amigos = amigos;
         this.nombre = nombre;
         this.solicitudesEnviadas = solicitudesEnviadas;
@@ -49,6 +54,35 @@ public class Usuario {
         this.peso = peso;
         this.distanciaDia = distanciaDia;
         this.distancia = distancia;
+        this.posiciones = posiciones;
+    }
+
+    @Override
+    public String toString() {
+        return "Usuario{" +
+                "amigos='" + amigos + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", solicitudesEnviadas='" + solicitudesEnviadas + '\'' +
+                ", solicitudesRecibidas='" + solicitudesRecibidas + '\'' +
+                ", ultimaFecha='" + ultimaFecha + '\'' +
+                ", pasos=" + pasos +
+                ", pasosDia=" + pasosDia +
+                ", altura=" + altura +
+                ", peso=" + peso +
+                ", distanciaDia=" + distanciaDia +
+                ", distancia=" + distancia +
+                ", calorias=" + calorias +
+                ", caloriasDia=" + caloriasDia +
+                ", posiciones=" + posiciones +
+                '}';
+    }
+
+    public ArrayList<Posicion> getPosiciones() {
+        return posiciones;
+    }
+
+    public void setPosiciones(ArrayList<Posicion> posiciones) {
+        this.posiciones = posiciones;
     }
 
     public String getAmigos() {
@@ -154,25 +188,5 @@ public class Usuario {
     public void setDistancia(double distancia) {
         this.distancia = distancia;
     }
-
-    @Override
-    public String toString() {
-        return "Usuario{" +
-                "amigos='" + amigos + '\'' +
-                ", nombre='" + nombre + '\'' +
-                ", solicitudesEnviadas='" + solicitudesEnviadas + '\'' +
-                ", solicitudesRecibidas='" + solicitudesRecibidas + '\'' +
-                ", ultimaFecha='" + ultimaFecha + '\'' +
-                ", calorias=" + calorias +
-                ", caloriasDia=" + caloriasDia +
-                ", pasos=" + pasos +
-                ", pasosDia=" + pasosDia +
-                ", altura=" + altura +
-                ", peso=" + peso +
-                ", distanciaDia=" + distanciaDia +
-                ", distancia=" + distancia +
-                '}';
-    }
-
 
 }

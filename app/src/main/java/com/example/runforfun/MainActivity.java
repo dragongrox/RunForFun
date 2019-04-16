@@ -1,6 +1,7 @@
 package com.example.runforfun;
 
 import android.Manifest;
+import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,9 +9,12 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -26,6 +30,7 @@ import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
@@ -41,6 +46,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -132,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
                 usuarioAmigo.setPeso(Integer.parseInt(dataSnapshot.child("peso").getValue().toString()));
                 usuarioAmigo.setDistancia(Double.parseDouble(dataSnapshot.child("distancia").getValue().toString()));
                 usuarioAmigo.setDistanciaDia(Double.parseDouble(dataSnapshot.child("distanciaDia").getValue().toString()));
+                usuarioAmigo.setPosiciones((ArrayList<Posicion>) dataSnapshot.child("posiciones").getValue());
             }
 
             @Override
@@ -184,18 +191,6 @@ public class MainActivity extends AppCompatActivity {
             databaseReferenceUsuario.setValue(usuario);
     }
 
-    /**
-     * Etapa del ciclo de la vida que corresponde a traer la aplicacion al primer plano
-     */
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-
-        if (asyncTaskTerminado) {
-            sincronizacionDatosAsyncTask = new SincronizacionDatosAsyncTask();
-            sincronizacionDatosAsyncTask.execute();
-        }
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -224,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Etapa del ciclo de la vida que corresponde al inicio de este Activity
+     *
      * @param savedInstanceState
      */
     @Override
@@ -322,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
                 textViewDistanciaDia.setText(getResources().getString(R.string.distanciaDia) + ": " + df.format(usuario.getDistanciaDia()));
 
                 //actualizamos la informacion en firebas cada 100 pasos y recalculamos las calorias
-                if (pasos > (pasosActualizados + 100))
+                if (pasos > (pasosActualizados + 20))
                     databaseReferenceUsuario.setValue(usuario);
                 switch (contImag) {
                     case 0:
@@ -361,8 +357,7 @@ public class MainActivity extends AppCompatActivity {
         //puesta en marcha del sensor podometro
         sensorManager.registerListener(andar, sensor, SensorManager.SENSOR_DELAY_GAME);
         //creacion y ejecucion de AsyncTask que se encarga de actualizar la informacion y calcular las calorias con el paso del tiempo
-        sincronizacionDatosAsyncTask = new SincronizacionDatosAsyncTask();
-        sincronizacionDatosAsyncTask.execute();
+        startService(new Intent(this, new ServicioSincronizacion().getClass()));
         //dibujamos la lista de amigos
         dibujarListaAmigos();
 
@@ -370,11 +365,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     public void dibujarListaAmigos() {
         String[] amigos = usuario.amigos.split("@");
         listaAmigos = Arrays.asList(amigos);
-        System.out.println("asdasd");
 
         drawerLayoutAmigos = findViewById(R.id.drawer_layout);
         recyclerViewAmigos = findViewById(R.id.recyclerView);
@@ -416,6 +409,7 @@ public class MainActivity extends AppCompatActivity {
                     usuario.setPeso(Integer.parseInt(dataSnapshot.child("peso").getValue().toString()));
                     usuario.setDistancia(Double.parseDouble(dataSnapshot.child("distancia").getValue().toString()));
                     usuario.setDistanciaDia(Double.parseDouble(dataSnapshot.child("distanciaDia").getValue().toString()));
+                    usuario.setPosiciones((ArrayList<Posicion>) dataSnapshot.child("posiciones").getValue());
 
                     //mostrar los datos visibles
                     editTextNombre.setText(usuario.getNombre() + "");
@@ -464,7 +458,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * metodo que recibe el resultado del Activiti de inicio de sesion
+     * metodo que recibe el resultado del Activity de inicio de sesion
+     *
      * @param requestCode
      * @param resultCode
      * @param data
@@ -493,6 +488,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Desconecta de la cuenta
+     *
      * @param view view del main
      */
     public void signOut(View view) {
@@ -612,6 +608,22 @@ public class MainActivity extends AppCompatActivity {
         // [END auth_fui_pp_tos]
     }
 
+    public LatLng ObtenerPosicion() {
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return null;
+        }
+        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        return new LatLng(location.getLatitude(), location.getLongitude());
+    }
+
     /**
      * On click aniadir amigo.
      *
@@ -625,6 +637,26 @@ public class MainActivity extends AppCompatActivity {
     public void OnClicMaps(View view) {
         Intent intentGoogleMaps = new Intent(getApplicationContext(), MapsActivity.class);
         startActivity(intentGoogleMaps);
+    }
+
+    public class ServicioSincronizacion extends IntentService {
+
+        public ServicioSincronizacion() {
+            super("ServicioSicronizacion");
+        }
+
+        @Override
+        public IBinder onBind(Intent intent) {
+            return null;
+        }
+
+        @Override
+        protected void onHandleIntent(Intent intent) {
+            sincronizacionDatosAsyncTask = new SincronizacionDatosAsyncTask();
+            sincronizacionDatosAsyncTask.execute();
+            while (true) ;
+        }
+
     }
 
     /**
@@ -644,22 +676,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Integer doInBackground(String... strings) {
             do {
-                try {
-                    sleep(6000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                velocidad = (((pasos - pasosCache) * 10) * multiplicadorPasos) * (0.06f * 3);
-                usuario.setDistancia(usuario.getDistancia() + ((pasos - pasosCache) * multiplicadorPasos) / 1000);
-                usuario.setDistanciaDia(usuario.getDistanciaDia() + ((pasos - pasosCache) * multiplicadorPasos) / 1000);
-                if (velocidad >= 7) {
-                    usuario.calorias += 0.048f * (usuario.getPeso() * 2.2f) * 0.25f;
-                    usuario.caloriasDia += 0.048f * (usuario.getPeso() * 2.2f) * 0.25f;
-                } else if (velocidad > 3) {
-                    usuario.calorias += 0.029f * (usuario.getPeso() * 2.2f) * 0.25f;
-                    usuario.caloriasDia += 0.048f * (usuario.getPeso() * 2.2f) * 0.25f;
-                }
-                pasosCache = pasos;
                 publishProgress(1);
             } while (mainActivo);
             return 0;
@@ -674,25 +690,46 @@ public class MainActivity extends AppCompatActivity {
                 multiplicadorPasos = 0.7f;
             else
                 multiplicadorPasos = 0.6f;
-            asyncTaskTerminado=false;
+            asyncTaskTerminado = false;
+            //puesta en marcha del sensor podometro
+            sensorManager.registerListener(andar, sensor, SensorManager.SENSOR_DELAY_GAME);
         }
 
         /**
          * Tareas tras finalizar el AsyncTask, en nuestro caso indicamos en la variable semaforo que el asinctask se ha terminado
+         *
          * @param integer
          */
         @Override
         protected void onPostExecute(Integer integer) {
-            asyncTaskTerminado=true;
+            asyncTaskTerminado = true;
         }
 
         /**
          * este apartado se encargara de actualizar demas datos de la propia interfaz, ya que el metodo do in background no tiene acceso a la interfaz
+         *
          * @param values valor de progreso
          */
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
+
+            try {
+                sleep(6000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            velocidad = (((pasos - pasosCache) * 10) * multiplicadorPasos) * (0.06f * 3);
+            usuario.setDistancia(usuario.getDistancia() + ((pasos - pasosCache) * multiplicadorPasos) / 1000);
+            usuario.setDistanciaDia(usuario.getDistanciaDia() + ((pasos - pasosCache) * multiplicadorPasos) / 1000);
+            if (velocidad >= 7) {
+                usuario.calorias += 0.048f * (usuario.getPeso() * 2.2f) * 0.25f;
+                usuario.caloriasDia += 0.048f * (usuario.getPeso() * 2.2f) * 0.25f;
+            } else if (velocidad > 3) {
+                usuario.calorias += 0.029f * (usuario.getPeso() * 2.2f) * 0.25f;
+                usuario.caloriasDia += 0.048f * (usuario.getPeso() * 2.2f) * 0.25f;
+            }
+            pasosCache = pasos;
             //periodicamente actualizaremos la lista de amigos
             dibujarListaAmigos();
             //actualizamos la velocidad
@@ -707,7 +744,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            //hacemos al comparacion
+            //hacemos la comparacion
             if (fechaActual.compareTo(fechaAlmacenada) != 0) {
                 databaseReferenceUsuario.child("caloriasDia").setValue(0 + "");
                 databaseReferenceUsuario.child("pasosDia").setValue(0 + "");
@@ -720,6 +757,27 @@ public class MainActivity extends AppCompatActivity {
             }
             if (databaseReferenceUsuario != null)
                 databaseReferenceUsuario.setValue(usuario);
+
+            //Actualizacion y guardado de la posicion GPS
+            LatLng posicion = ObtenerPosicion();
+            try {
+                leerUsuario();
+                usuario.posiciones.size();
+                double lat = usuario.posiciones.get(usuario.posiciones.size() - 1).lat;
+                double lon = usuario.posiciones.get(usuario.posiciones.size() - 1).lon;
+                if (lat - posicion.latitude > 0.0001d || lat - posicion.latitude < -0.0001d
+                        && lon - posicion.longitude > 0.0001d || lon - posicion.longitude < -0.0001d)
+                    usuario.posiciones.add(new Posicion(posicion.latitude, posicion.longitude, usuario.ultimaFecha));
+            } catch (NullPointerException e) {
+                usuario.posiciones = new ArrayList<>();
+                usuario.posiciones.add(new Posicion(posicion.latitude, posicion.longitude, usuario.ultimaFecha));
+            } catch (ArrayIndexOutOfBoundsException e) {
+                usuario.posiciones = new ArrayList<>();
+                usuario.posiciones.add(new Posicion(posicion.latitude, posicion.longitude, usuario.ultimaFecha));
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+            System.out.println("El servicio esta activo....");
 
         }
     }
