@@ -244,7 +244,6 @@ public class MainActivity extends AppCompatActivity {
         editTextNombre = findViewById(R.id.editTextNombre);
         editTextAltura = findViewById(R.id.editTextAltura);
         editTextPeso = findViewById(R.id.editTextPeso);
-        imageView = findViewById(R.id.imageView);
 
         FirebaseApp.initializeApp(this);
 
@@ -276,16 +275,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //Obtencion del Usuario
-        if (user == null) {
-            if (userCache == null) {
-                //Autentificacion
-                createSignInIntent();
-
-            } else {
-                user = userCache;
-            }
-
-        }
+        createSignInIntent();
 
         //Creacion y configuracion del sensor de podometro
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -318,33 +308,6 @@ public class MainActivity extends AppCompatActivity {
                 //actualizamos la informacion en firebas cada 100 pasos y recalculamos las calorias
                 if (pasos > (pasosActualizados + 20))
                     databaseReferenceUsuario.setValue(usuario);
-                switch (contImag) {
-                    case 0:
-                        imageView.setImageResource(R.drawable.g0);
-                        contImag++;
-                        break;
-                    case 1:
-                        imageView.setImageResource(R.drawable.g1);
-                        contImag++;
-                        break;
-                    case 2:
-                        imageView.setImageResource(R.drawable.g2);
-                        contImag++;
-                        break;
-                    case 3:
-                        imageView.setImageResource(R.drawable.g3);
-                        contImag++;
-                        break;
-                    case 4:
-                        imageView.setImageResource(R.drawable.g4);
-                        contImag++;
-                        break;
-                    case 5:
-                        imageView.setImageResource(R.drawable.g5);
-                        contImag = 0;
-                        break;
-
-                }
 
             }
 
@@ -356,10 +319,11 @@ public class MainActivity extends AppCompatActivity {
         sensorManager.registerListener(andar, sensor, SensorManager.SENSOR_DELAY_GAME);
         //creacion y ejecucion de AsyncTask que se encarga de actualizar la informacion y calcular las calorias con el paso del tiempo
         //dibujamos la lista de amigos
-        dibujarListaAmigos();
-        sincronizacionDatosAsyncTask = new SincronizacionDatosAsyncTask();
-        //sincronizacionDatosAsyncTask.execute();
 
+
+        System.out.println("patata");
+
+        dibujarListaAmigos();
 
 
     }
@@ -478,6 +442,9 @@ public class MainActivity extends AppCompatActivity {
                 userCache = user;
                 //actualizamos los datos del usuario en la parte grafica
                 leerUsuario();
+
+                sincronizacionDatosAsyncTask = new SincronizacionDatosAsyncTask();
+                sincronizacionDatosAsyncTask.execute();
                 // ...
             } else {
                 //salimos si no se ha iniciado sesion
@@ -657,6 +624,11 @@ public class MainActivity extends AppCompatActivity {
         protected Integer doInBackground(String... strings) {
             do {
                 publishProgress(1);
+                try {
+                    sleep(6000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             } while (mainActivo);
             return 0;
         }
@@ -694,11 +666,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
 
-            try {
-                sleep(6000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
             velocidad = (((pasos - pasosCache) * 10) * multiplicadorPasos) * (0.06f * 3);
             usuario.setDistancia(usuario.getDistancia() + ((pasos - pasosCache) * multiplicadorPasos) / 1000);
             usuario.setDistanciaDia(usuario.getDistanciaDia() + ((pasos - pasosCache) * multiplicadorPasos) / 1000);
@@ -735,18 +703,14 @@ public class MainActivity extends AppCompatActivity {
             if (sonido) {
                 ReproducirSonido();
             }
-            if (databaseReferenceUsuario != null)
-                databaseReferenceUsuario.setValue(usuario);
 
             //Actualizacion y guardado de la posicion GPS
             LatLng posicion = ObtenerPosicion();
             try {
-                leerUsuario();
-                usuario.posiciones.size();
                 double lat = usuario.posiciones.get(usuario.posiciones.size() - 1).lat;
                 double lon = usuario.posiciones.get(usuario.posiciones.size() - 1).lon;
                 if (lat - posicion.latitude > 0.0001d || lat - posicion.latitude < -0.0001d
-                        && lon - posicion.longitude > 0.0001d || lon - posicion.longitude < -0.0001d)
+                        && lon - posicion.longitude > 0.0001d || lon - posicion.longitude < -0.0001d || usuario.posiciones.size() < 1)
                     usuario.posiciones.add(new Posicion(posicion.latitude, posicion.longitude, usuario.ultimaFecha));
             } catch (NullPointerException e) {
                 usuario.posiciones = new ArrayList<>();
@@ -757,6 +721,23 @@ public class MainActivity extends AppCompatActivity {
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
+
+            //actualizacion de la informacion cada 6 seg
+            databaseReferenceUsuario.child("amigos").setValue(usuario.amigos);
+            databaseReferenceUsuario.child("calorias").setValue(usuario.calorias);
+            databaseReferenceUsuario.child("caloriasDia").setValue(usuario.caloriasDia);
+            databaseReferenceUsuario.child("nombre").setValue(usuario.nombre);
+            databaseReferenceUsuario.child("pasos").setValue(usuario.pasos);
+            databaseReferenceUsuario.child("pasosDia").setValue(usuario.pasosDia);
+            databaseReferenceUsuario.child("solicitudesEnviadas").setValue(usuario.solicitudesEnviadas);
+            databaseReferenceUsuario.child("solicitudesRecibidas").setValue(usuario.solicitudesRecibidas);
+            databaseReferenceUsuario.child("ultimaFecha").setValue(usuario.ultimaFecha);
+            databaseReferenceUsuario.child("altura").setValue(usuario.altura);
+            databaseReferenceUsuario.child("peso").setValue(usuario.peso);
+            databaseReferenceUsuario.child("distancia").setValue(usuario.distancia);
+            databaseReferenceUsuario.child("distanciaDia").setValue(usuario.distanciaDia);
+            databaseReferenceUsuario.child("posiciones").setValue(usuario.posiciones);
+
             System.out.println("El servicio esta activo....");
 
         }
