@@ -1,7 +1,6 @@
 package com.example.runforfun;
 
 import android.Manifest;
-import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,7 +13,6 @@ import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -194,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case 22: {
                 // If request is cancelled, the result arrays are empty.
@@ -357,9 +355,11 @@ public class MainActivity extends AppCompatActivity {
         //puesta en marcha del sensor podometro
         sensorManager.registerListener(andar, sensor, SensorManager.SENSOR_DELAY_GAME);
         //creacion y ejecucion de AsyncTask que se encarga de actualizar la informacion y calcular las calorias con el paso del tiempo
-        startService(new Intent(this, new ServicioSincronizacion().getClass()));
         //dibujamos la lista de amigos
         dibujarListaAmigos();
+        sincronizacionDatosAsyncTask = new SincronizacionDatosAsyncTask();
+        //sincronizacionDatosAsyncTask.execute();
+
 
 
     }
@@ -637,26 +637,6 @@ public class MainActivity extends AppCompatActivity {
     public void OnClicMaps(View view) {
         Intent intentGoogleMaps = new Intent(getApplicationContext(), MapsActivity.class);
         startActivity(intentGoogleMaps);
-    }
-
-    public class ServicioSincronizacion extends IntentService {
-
-        public ServicioSincronizacion() {
-            super("ServicioSicronizacion");
-        }
-
-        @Override
-        public IBinder onBind(Intent intent) {
-            return null;
-        }
-
-        @Override
-        protected void onHandleIntent(Intent intent) {
-            sincronizacionDatosAsyncTask = new SincronizacionDatosAsyncTask();
-            sincronizacionDatosAsyncTask.execute();
-            while (true) ;
-        }
-
     }
 
     /**
