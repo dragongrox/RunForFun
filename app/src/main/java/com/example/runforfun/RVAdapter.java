@@ -125,7 +125,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
         PersonViewHolder(View itemView) {
             super(itemView);
             imageViewAmigo = itemView.findViewById(R.id.imageViewAmigo);
-            textViewAmigo = itemView.findViewById(R.id.textViewAmigo);
+            textViewAmigo = itemView.findViewById(R.id.textViewMensaje);
             imageButtonBorrar = itemView.findViewById(R.id.imageButtonBorrar);
             textViewAmigoCalorias = itemView.findViewById(R.id.textViewAmigoCalorias);
             textViewAmigoPasos = itemView.findViewById(R.id.textViewAmigoPasos);

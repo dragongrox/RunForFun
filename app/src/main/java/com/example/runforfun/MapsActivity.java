@@ -17,6 +17,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -59,9 +63,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
         // Add a marker in Sydney and move the camera
+        ArrayList posiciones = MainActivity.usuario.posiciones;
+
         LatLng sydney = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.addPolyline(new PolylineOptions().add(sydney).add(new LatLng(50, 50)));
+        PolylineOptions polylineOptions = new PolylineOptions();
+
+        for (int cont = 0; cont < posiciones.size(); cont++) {
+            Map<String, String> map = (HashMap) posiciones.get(cont);
+            Posicion posicion = new Posicion(map);
+            polylineOptions.add(new LatLng(posicion.lat, posicion.lon));
+        }
+
+        mMap.addPolyline(polylineOptions);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 }

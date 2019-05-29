@@ -569,7 +569,13 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
         Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        return new LatLng(location.getLatitude(), location.getLongitude());
+        LatLng posicion = new LatLng(0, 0);
+        if (location != null) {
+            double latitud = location.getLatitude();
+            double longitud = location.getLongitude();
+            posicion = new LatLng(latitud, longitud);
+        }
+        return posicion;
     }
 
     /**
@@ -585,6 +591,13 @@ public class MainActivity extends AppCompatActivity {
     public void OnClicMaps(View view) {
         Intent intentGoogleMaps = new Intent(getApplicationContext(), MapsActivity.class);
         startActivity(intentGoogleMaps);
+    }
+
+    public void OnClicChatGlobal(View view) {
+        Intent intentChatGlobal = new Intent(getApplicationContext(), ChatGeneral.class);
+        intentChatGlobal.putExtra("nombreUsuario", usuario.getNombre());
+        startActivity(intentChatGlobal);
+
     }
 
     /**
@@ -646,7 +659,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
-
 
 
             velocidad = (((pasos - pasosCache) * 10) * multiplicadorPasos) * (0.06f * 3);

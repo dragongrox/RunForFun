@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/fui_idp_button_background_facebook"
     android:orientation="vertical"
     android:padding="8dp">
 
@@ -20,7 +21,7 @@
             tools:srcCompat="@tools:sample/avatars" />
 
         <TextView
-            android:id="@+id/textViewAmigo"
+            android:id="@+id/textViewMensaje"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -29,10 +30,19 @@
             tools:text="@tools:sample/lorem" />
 
         <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/com_facebook_button_background_color_focused_disabled"
+            app:srcCompat="@drawable/com_facebook_button_send_icon_white" />
+
+        <ImageButton
             android:id="@+id/imageButtonBorrar"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:backgroundTint="@color/fui_bgEmail"
             app:srcCompat="@drawable/com_facebook_tooltip_black_xout" />
 
     </LinearLayout>

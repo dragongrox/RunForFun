@@ -22,4 +22,9 @@
     <string name="errorSiempreTuAmigo">Sir, I will always be your friend ..... but now seriously, you can\'t add your self as friend>: |</string>
     <string name="paginaWeb">Web page</string>
     <string name="amigosActividad">This is the activity of your friends</string>
+    <string name="aniadirAmigo">Add friend</string>
+    <string name="bienvenidaChat">We welcome to this chat</string>
+    <string name="rutaMapa">See my route on the map</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="velocidad">"Speed: "</string>
 </resources>
