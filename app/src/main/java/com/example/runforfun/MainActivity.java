@@ -106,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
 
     //variable semaforo que controla la finalizacion del AsyncTask
     boolean asyncTaskTerminado = false;
+    //vriable semaform que controla la lectura de los datos
+    boolean usuarioLeido = false;
 
     /**
      * metodo que se encarga de eliminar el amigo que tenga el nombre pasado por parametro
@@ -166,29 +168,6 @@ public class MainActivity extends AppCompatActivity {
         mediaPlayer.start();
         sonido = false;
     }
-
-    /**
-     * aqui controlamos el cierre de la aplicacion
-     */
-    @Override
-    protected void onStop() {
-        databaseReferenceUsuario.setValue(usuario);
-        database = null;
-        mainActivo = false;
-        super.onStop();
-
-    }
-
-    /**
-     * Etapa del ciclo de la vida que corresponde a la pausa cuando dejamos la aplicacion en segundo plano
-     */
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (usuario != null && databaseReferenceUsuario != null)
-            databaseReferenceUsuario.setValue(usuario);
-    }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -354,6 +333,7 @@ public class MainActivity extends AppCompatActivity {
         usuario = new Usuario();
         database = FirebaseDatabase.getInstance();
         databaseReferenceUsuario = database.getReference(nombreUsuario);
+        DataSnapshot dataSnapshotR;
         //creamos los listeners para leer los datos
         databaseReferenceUsuario.addValueEventListener(new ValueEventListener() {
             @Override
@@ -375,6 +355,7 @@ public class MainActivity extends AppCompatActivity {
                     usuario.setDistanciaDia(Double.parseDouble(dataSnapshot.child("distanciaDia").getValue().toString()));
                     usuario.setPosiciones((ArrayList<Posicion>) dataSnapshot.child("posiciones").getValue());
 
+
                     //mostrar los datos visibles
                     editTextNombre.setText(usuario.getNombre() + "");
                     editTextAltura.setText(usuario.getAltura() + "");
@@ -386,7 +367,7 @@ public class MainActivity extends AppCompatActivity {
                     textViewDistancia.setText(getResources().getString(R.string.distancia) + ": " + df.format(usuario.getDistancia()));
                     textViewDistanciaDia.setText(getResources().getString(R.string.distanciaDia) + ": " + df.format(usuario.getDistanciaDia()));
 
-
+                    usuarioLeido = true;
                 } else {
                     //creamos los datos del nuevo usuario usando los valores del usuario por defecto
                     databaseReferenceUsuario.setValue(usuario);
@@ -667,13 +648,14 @@ public class MainActivity extends AppCompatActivity {
             super.onProgressUpdate(values);
 
 
+
             velocidad = (((pasos - pasosCache) * 10) * multiplicadorPasos) * (0.06f * 3);
             usuario.setDistancia(usuario.getDistancia() + ((pasos - pasosCache) * multiplicadorPasos) / 1000);
             usuario.setDistanciaDia(usuario.getDistanciaDia() + ((pasos - pasosCache) * multiplicadorPasos) / 1000);
-            if (velocidad >= 7) {
+            if (velocidad >= 3) {
                 usuario.calorias += 0.048f * (usuario.getPeso() * 2.2f) * 0.25f;
                 usuario.caloriasDia += 0.048f * (usuario.getPeso() * 2.2f) * 0.25f;
-            } else if (velocidad > 3) {
+            } else if (velocidad >= 1) {
                 usuario.calorias += 0.029f * (usuario.getPeso() * 2.2f) * 0.25f;
                 usuario.caloriasDia += 0.048f * (usuario.getPeso() * 2.2f) * 0.25f;
             }
@@ -693,7 +675,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             //hacemos la comparacion
-            if (fechaActual.compareTo(fechaAlmacenada) != 0) {
+            if (fechaActual.compareTo(fechaAlmacenada) != 0 && fechaActual != null && fechaAlmacenada != null) {
                 databaseReferenceUsuario.child("caloriasDia").setValue(0 + "");
                 databaseReferenceUsuario.child("pasosDia").setValue(0 + "");
                 databaseReferenceUsuario.child("distanciaDia").setValue(0 + "");
@@ -722,21 +704,27 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println(e.getMessage());
             }
 
-            //actualizacion de la informacion cada 6 seg
-            databaseReferenceUsuario.child("amigos").setValue(usuario.amigos);
-            databaseReferenceUsuario.child("calorias").setValue(usuario.calorias);
-            databaseReferenceUsuario.child("caloriasDia").setValue(usuario.caloriasDia);
-            databaseReferenceUsuario.child("nombre").setValue(usuario.nombre);
-            databaseReferenceUsuario.child("pasos").setValue(usuario.pasos);
-            databaseReferenceUsuario.child("pasosDia").setValue(usuario.pasosDia);
-            databaseReferenceUsuario.child("solicitudesEnviadas").setValue(usuario.solicitudesEnviadas);
-            databaseReferenceUsuario.child("solicitudesRecibidas").setValue(usuario.solicitudesRecibidas);
-            databaseReferenceUsuario.child("ultimaFecha").setValue(usuario.ultimaFecha);
-            databaseReferenceUsuario.child("altura").setValue(usuario.altura);
-            databaseReferenceUsuario.child("peso").setValue(usuario.peso);
-            databaseReferenceUsuario.child("distancia").setValue(usuario.distancia);
-            databaseReferenceUsuario.child("distanciaDia").setValue(usuario.distanciaDia);
-            databaseReferenceUsuario.child("posiciones").setValue(usuario.posiciones);
+//            //actualizacion de la informacion cada 6 seg si el usuario ya ha sido leido
+            if (usuarioLeido) {
+                if (databaseReferenceUsuario != null) {
+                    databaseReferenceUsuario.child("amigos").setValue(usuario.amigos);
+                    databaseReferenceUsuario.child("calorias").setValue(usuario.calorias);
+                    databaseReferenceUsuario.child("caloriasDia").setValue(usuario.caloriasDia);
+                    databaseReferenceUsuario.child("nombre").setValue(usuario.nombre);
+                    databaseReferenceUsuario.child("pasos").setValue(usuario.pasos);
+                    databaseReferenceUsuario.child("pasosDia").setValue(usuario.pasosDia);
+                    databaseReferenceUsuario.child("solicitudesEnviadas").setValue(usuario.solicitudesEnviadas);
+                    databaseReferenceUsuario.child("solicitudesRecibidas").setValue(usuario.solicitudesRecibidas);
+                    databaseReferenceUsuario.child("ultimaFecha").setValue(usuario.ultimaFecha);
+                    databaseReferenceUsuario.child("altura").setValue(usuario.altura);
+                    databaseReferenceUsuario.child("peso").setValue(usuario.peso);
+                    databaseReferenceUsuario.child("distancia").setValue(usuario.distancia);
+                    databaseReferenceUsuario.child("distanciaDia").setValue(usuario.distanciaDia);
+                    databaseReferenceUsuario.child("posiciones").setValue(usuario.posiciones);
+                } else {
+                    leerUsuario();
+                }
+            }
 
             System.out.println("El servicio esta activo....");
 
