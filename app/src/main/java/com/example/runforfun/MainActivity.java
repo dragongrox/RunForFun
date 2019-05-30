@@ -58,11 +58,13 @@ import static java.lang.Thread.sleep;
 public class MainActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 123;
     static Usuario usuario;
+    static Usuario usuarioAmigo;
     static FirebaseDatabase database;
     static DatabaseReference databaseReferenceUsuario;
     static DatabaseReference databaseReferenceAmigo;
     //firebase inicializacion
     static String nombreUsuario = "default";
+    static String nombreUsuarioAmigo = "";
     static boolean sonido = false;
     //pasos
     int pasos = -3,
@@ -115,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
      * @param nombreAmigo nombre del amigo
      */
     public static void EliminarAmigo(String nombreAmigo) {
-        Usuario usuarioAmigo = new Usuario();
+        usuarioAmigo = new Usuario();
         //marcamos el semaforo para reproducir el sonido que en la siguiente actualizacion del AsyncTask emitira el sonido y actualizara el recycled view del menu lateral
         sonido = true;
         //obtenemos al nodo del amigo
@@ -333,7 +335,6 @@ public class MainActivity extends AppCompatActivity {
         usuario = new Usuario();
         database = FirebaseDatabase.getInstance();
         databaseReferenceUsuario = database.getReference(nombreUsuario);
-        DataSnapshot dataSnapshotR;
         //creamos los listeners para leer los datos
         databaseReferenceUsuario.addValueEventListener(new ValueEventListener() {
             @Override
@@ -435,24 +436,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Desconecta de la cuenta
+     * Metodo que actualiza al amigo que hay que abrir el chat privado
      *
-     * @param view view del main
+     * @param nombreUsuarioAmigo
      */
-    public void signOut(View view) {
-        //guardamos los datos
-        databaseReferenceUsuario.setValue(usuario);
-        //eliminamos el cache
-        userCache = null;
-        // [START auth_fui_signout]
-        AuthUI.getInstance()
-                .signOut(this)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    public void onComplete(@NonNull Task<Void> task) {
-                        createSignInIntent();
-                    }
-                });
-        // [END auth_fui_signout]
+    public static void OnClickChatUsuario(String nombreUsuarioAmigo) {
+        MainActivity.nombreUsuarioAmigo = nombreUsuarioAmigo;
 
     }
 
@@ -588,16 +577,55 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intentAniadirAmigo);
     }
 
+    /**
+     * Desconecta de la cuenta
+     *
+     * @param view view del main
+     */
+    public void signOut(View view) {
+        //guardamos los datos
+        databaseReferenceUsuario.setValue(usuario);
+        //eliminamos el cache
+        userCache = null;
+        // [START auth_fui_signout]
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        createSignInIntent();
+                    }
+                });
+        System.exit(0);
+        // [END auth_fui_signout]
+
+    }
+
+    /**
+     * On click para abrir la ventana del mapa de ruta
+     *
+     * @param view
+     */
     public void OnClicMaps(View view) {
         Intent intentGoogleMaps = new Intent(getApplicationContext(), MapsActivity.class);
         startActivity(intentGoogleMaps);
     }
 
+    /**
+     * On click para abrir la ventana del chat General / Global
+     */
     public void OnClicChatGlobal(View view) {
         Intent intentChatGlobal = new Intent(getApplicationContext(), ChatGeneral.class);
         intentChatGlobal.putExtra("nombreUsuario", usuario.getNombre());
         startActivity(intentChatGlobal);
 
+    }
+
+    /**
+     * metodo que abre la ventana del chat privado
+     */
+    public void OnClickChatUsuario() {
+        Intent intentChatUsuario = new Intent(getApplicationContext(), ChatUsuario.class);
+        startActivity(intentChatUsuario);
     }
 
     /**
@@ -674,6 +702,12 @@ public class MainActivity extends AppCompatActivity {
             pasosCache = pasos;
             //periodicamente actualizaremos la lista de amigos
             dibujarListaAmigos();
+
+
+            if (!nombreUsuarioAmigo.isEmpty()) {
+                OnClickChatUsuario();
+            }
+
             //actualizamos la velocidad
             textViewVelocidad.setText(velocidad + "km/h");
             //comprobamos el cambio de dia para reiniciar las calorias, los pasos y la distancia de ese dia

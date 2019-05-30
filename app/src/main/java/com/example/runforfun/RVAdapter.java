@@ -27,6 +27,8 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
     List<String> listAmigos;
     Usuario usuario = new Usuario();
 
+    FirebaseDatabase database;
+
     //inicializamos la vista con la vista que se nos pasa desde el main
     RVAdapter(List<String> listAmigos) {
         this.listAmigos = listAmigos;
@@ -53,7 +55,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
         df.setRoundingMode(RoundingMode.CEILING);
         if (!listAmigos.get(i).equals("n")) {
             //Conectamos a la base de datos para actualizar la informacion de las rutas
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            database = FirebaseDatabase.getInstance();
             DatabaseReference databaseReferenceUsuario = database.getReference(listAmigos.get(i));
             databaseReferenceUsuario.addValueEventListener(new ValueEventListener() {
 
@@ -97,6 +99,18 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            personViewHolder.imageButtonAbrirChat.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MainActivity.OnClickChatUsuario(personViewHolder.textViewAmigo.getText().toString() + "");
+
+                }
+            });
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
         } else {
             personViewHolder.textViewAmigo.setText(R.string.errorNoTienesAmigos);
@@ -105,7 +119,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
             personViewHolder.textViewAmigoCaloriasString.setText("");
             personViewHolder.textViewAmigoPasosString.setText("");
             personViewHolder.imageButtonBorrar.setVisibility(View.INVISIBLE);
-
+            personViewHolder.imageButtonAbrirChat.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -120,6 +134,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
         ImageView imageViewAmigo;
         TextView textViewAmigo, textViewAmigoCalorias, textViewAmigoPasos, textViewAmigoCaloriasString, textViewAmigoPasosString;
         ImageButton imageButtonBorrar;
+        ImageButton imageButtonAbrirChat;
 
         //inicializamos los campos
         PersonViewHolder(View itemView) {
@@ -131,6 +146,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
             textViewAmigoPasos = itemView.findViewById(R.id.textViewAmigoPasos);
             textViewAmigoCaloriasString = itemView.findViewById(R.id.textViewAmigoCaloriasString);
             textViewAmigoPasosString = itemView.findViewById(R.id.textViewAmigoPasosString);
+            imageButtonAbrirChat = itemView.findViewById(R.id.imageButtonAbrirChat);
         }
 
 

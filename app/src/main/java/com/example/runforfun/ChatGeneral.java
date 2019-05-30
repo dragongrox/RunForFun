@@ -65,12 +65,13 @@ public class ChatGeneral extends AppCompatActivity {
         String s = nombreUsuario + ": \n" + editTextChat.getText().toString();
         listaChat.add(s);
         databaseReferenceChatGlobal.setValue(listaChat);
+        editTextChat.setText("");
     }
 
     public void dibujarListaMensajes() {
 
         drawerLayoutChat = findViewById(R.id.drawer_layout_chat_general);
-        recyclerViewChat = findViewById(R.id.recyclerViewChatGeneral);
+        recyclerViewChat = findViewById(R.id.recyclerViewChatUsuario);
 
         //creamos el adaptador para la lista
         LinearLayoutManager llm = new LinearLayoutManager(this);
