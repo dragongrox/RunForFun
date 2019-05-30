@@ -28,6 +28,7 @@
     <string name="bienvenidaChat">Te damos la bienvenida a este chat</string>
     <string name="enviar">Enviar</string>
     <string name="textoChat">Escribe aqui</string>
+    <string name="escanear">Escanear</string>
     <!-- Errores -->
     <string name="errorNombre">"No es un nombre valido"</string>
     <string name="errorAltura">"No es una altura valida"</string>

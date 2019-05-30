@@ -18,7 +18,7 @@ public class Mensaje {
 
     public Mensaje(Map<String, Object> map) {
         this.texto = (String) (map.get("texto"));
-        this.autor = (String) (map.get("texto"));
+        this.autor = (String) (map.get("autor"));
     }
 
     public String getTexto() {

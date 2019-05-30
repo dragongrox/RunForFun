@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -49,6 +50,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.Thread.sleep;
 
@@ -100,8 +102,8 @@ public class MainActivity extends AppCompatActivity {
     DrawerLayout drawerLayoutAmigos;
     RecyclerView recyclerViewAmigos;
 
-    //Declaracion del AsyncTask
-    SincronizacionDatosAsyncTask sincronizacionDatosAsyncTask;
+    //Declaracion de los AsyncTask
+    SincronizacionDatosBiometricosAsyncTask sincronizacionDatosBiometricosAsyncTask;
 
     //formateador de los decimales
     DecimalFormat df;
@@ -256,57 +258,54 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //Obtencion del Usuario
-        createSignInIntent();
+        if (user == null) {
+            if (userCache == null) {
+                createSignInIntent();
 
-        //Creacion y configuracion del sensor de podometro
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
 
-        //comprobamos que exista el sensor del podometro
-        if (sensor == null) {
-            Toast.makeText(this, "No tienes podómetro", Toast.LENGTH_LONG).show();
+                //Creacion y configuracion del sensor de podometro
+                sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+                sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+
+                //comprobamos que exista el sensor del podometro
+                if (sensor == null) {
+                    Toast.makeText(this, "No tienes podómetro", Toast.LENGTH_LONG).show();
+                }
+                //inicializacion del usuario
+                if (usuario == null)
+                    usuario = new Usuario();
+                //inicializacion del sensor de podometro
+                andar = new SensorEventListener() {
+                    @Override
+                    public void onSensorChanged(SensorEvent event) {
+                        //cada vez que de un paso se sumaran los pasos
+                        pasos = (usuario.getPasos());
+                        pasosDia = (usuario.getPasosDia());
+                        pasos++;
+                        usuario.setPasos(pasos);
+                        pasosDia++;
+                        usuario.setPasosDia(pasosDia);
+                        textViewPasosDia.setText(getResources().getString(R.string.pasosDia) + ": " + pasosDia);
+                        textViewPasos.setText(getResources().getString(R.string.pasos) + ": " + pasos);
+                        textViewCalorias.setText(getResources().getString(R.string.calorias) + ": \t" + df.format(usuario.getCalorias()));
+                        textViewCaloriasDia.setText(getResources().getString(R.string.caloriasDia) + ": \t" + df.format(usuario.getCaloriasDia()));
+                        textViewDistancia.setText(getResources().getString(R.string.distancia) + ": " + df.format(usuario.getDistancia()));
+                        textViewDistanciaDia.setText(getResources().getString(R.string.distanciaDia) + ": " + df.format(usuario.getDistanciaDia()));
+
+                        //actualizamos la informacion en firebas cada 100 pasos y recalculamos las calorias
+                        if (pasos > (pasosActualizados + 20))
+                            databaseReferenceUsuario.setValue(usuario);
+
+                    }
+
+                    @Override
+                    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+                    }
+                };
+                //puesta en marcha del sensor podometro
+                sensorManager.registerListener(andar, sensor, SensorManager.SENSOR_DELAY_GAME);
+            }
         }
-        //inicializacion del usuario
-        usuario = new Usuario();
-        //inicializacion del sensor de podometro
-        andar = new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent event) {
-                //cada vez que de un paso se sumaran los pasos
-                pasos = (usuario.getPasos());
-                pasosDia = (usuario.getPasosDia());
-                pasos++;
-                usuario.setPasos(pasos);
-                pasosDia++;
-                usuario.setPasosDia(pasosDia);
-                textViewPasosDia.setText(getResources().getString(R.string.pasosDia) + ": " + pasosDia);
-                textViewPasos.setText(getResources().getString(R.string.pasos) + ": " + pasos);
-                textViewCalorias.setText(getResources().getString(R.string.calorias) + ": \t" + df.format(usuario.getCalorias()));
-                textViewCaloriasDia.setText(getResources().getString(R.string.caloriasDia) + ": \t" + df.format(usuario.getCaloriasDia()));
-                textViewDistancia.setText(getResources().getString(R.string.distancia) + ": " + df.format(usuario.getDistancia()));
-                textViewDistanciaDia.setText(getResources().getString(R.string.distanciaDia) + ": " + df.format(usuario.getDistanciaDia()));
-
-                //actualizamos la informacion en firebas cada 100 pasos y recalculamos las calorias
-                if (pasos > (pasosActualizados + 20))
-                    databaseReferenceUsuario.setValue(usuario);
-
-            }
-
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int accuracy) {
-            }
-        };
-        //puesta en marcha del sensor podometro
-        sensorManager.registerListener(andar, sensor, SensorManager.SENSOR_DELAY_GAME);
-        //creacion y ejecucion de AsyncTask que se encarga de actualizar la informacion y calcular las calorias con el paso del tiempo
-        //dibujamos la lista de amigos
-
-
-        System.out.println("patata");
-
-        dibujarListaAmigos();
-
-
     }
 
 
@@ -321,6 +320,7 @@ public class MainActivity extends AppCompatActivity {
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recyclerViewAmigos.setLayoutManager(llm);
         recyclerViewAmigos.setAdapter(new RVAdapter(listaAmigos));
+
     }
 
     /**
@@ -425,9 +425,116 @@ public class MainActivity extends AppCompatActivity {
                 //actualizamos los datos del usuario en la parte grafica
                 leerUsuario();
 
-                sincronizacionDatosAsyncTask = new SincronizacionDatosAsyncTask();
-                sincronizacionDatosAsyncTask.execute();
-                // ...
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        do {
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //Actualizamos la lista de migos
+                                    String[] amigos = usuario.amigos.split("@");
+
+                                    if (listaAmigos == null) {
+                                        dibujarListaAmigos();
+                                    }
+                                    if (listaAmigos.get(0) == "n" || Arrays.asList(amigos).get(0) == "n" || listaAmigos.size() != Arrays.asList(amigos).size()) {
+                                        dibujarListaAmigos();
+                                    }
+                                    //Abertura del chat con el amigo
+                                    if (!nombreUsuarioAmigo.isEmpty()) {
+                                        OnClickChatUsuario();
+                                    }
+
+                                    //si el boolean que se encarga de anunciar la eliminacion de un amigo esta en true se procedera a hacer sonar el sonido
+                                    if (sonido) {
+                                        ReproducirSonido();
+                                    }
+
+                                    //actualizacion de la informacion cada 6 seg si el usuario ya ha sido leido
+                                    if (usuarioLeido) {
+                                        databaseReferenceUsuario.child("amigos").setValue(MainActivity.usuario.amigos);
+                                        databaseReferenceUsuario.child("calorias").setValue(MainActivity.usuario.calorias);
+                                        databaseReferenceUsuario.child("caloriasDia").setValue(MainActivity.usuario.caloriasDia);
+                                        databaseReferenceUsuario.child("nombre").setValue(MainActivity.usuario.nombre);
+                                        databaseReferenceUsuario.child("pasos").setValue(MainActivity.usuario.pasos);
+                                        databaseReferenceUsuario.child("pasosDia").setValue(MainActivity.usuario.pasosDia);
+                                        databaseReferenceUsuario.child("solicitudesEnviadas").setValue(MainActivity.usuario.solicitudesEnviadas);
+                                        databaseReferenceUsuario.child("solicitudesRecibidas").setValue(MainActivity.usuario.solicitudesRecibidas);
+                                        databaseReferenceUsuario.child("ultimaFecha").setValue(MainActivity.usuario.ultimaFecha);
+                                        databaseReferenceUsuario.child("altura").setValue(MainActivity.usuario.altura);
+                                        databaseReferenceUsuario.child("peso").setValue(MainActivity.usuario.peso);
+                                        databaseReferenceUsuario.child("distancia").setValue(MainActivity.usuario.distancia);
+                                        databaseReferenceUsuario.child("distanciaDia").setValue(MainActivity.usuario.distanciaDia);
+                                        databaseReferenceUsuario.child("posiciones").setValue(MainActivity.usuario.posiciones);
+                                    } else {
+                                        leerUsuario();
+                                    }
+
+                                    databaseReferenceUsuario.addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            if (dataSnapshot.exists()) {
+                                                MainActivity.usuario.setAmigos(dataSnapshot.child("amigos").getValue().toString());
+                                                MainActivity.usuario.setCalorias(Float.parseFloat(dataSnapshot.child("calorias").getValue().toString()));
+                                                MainActivity.usuario.setCaloriasDia(Float.parseFloat(dataSnapshot.child("caloriasDia").getValue().toString()));
+                                                MainActivity.usuario.setNombre(dataSnapshot.child("nombre").getValue().toString());
+                                                MainActivity.usuario.setPasos(Integer.parseInt(dataSnapshot.child("pasos").getValue().toString()));
+                                                MainActivity.usuario.setPasosDia(Integer.parseInt(dataSnapshot.child("pasosDia").getValue().toString()));
+                                                MainActivity.usuario.setSolicitudesEnviadas(dataSnapshot.child("solicitudesEnviadas").getValue().toString());
+                                                MainActivity.usuario.setSolicitudesRecibidas(dataSnapshot.child("solicitudesRecibidas").getValue().toString());
+                                                MainActivity.usuario.setUltimaFecha(dataSnapshot.child("ultimaFecha").getValue().toString());
+                                                MainActivity.usuario.setAltura(Integer.parseInt(dataSnapshot.child("altura").getValue().toString()));
+                                                MainActivity.usuario.setPeso(Integer.parseInt(dataSnapshot.child("peso").getValue().toString()));
+                                                MainActivity.usuario.setDistancia(Double.parseDouble(dataSnapshot.child("distancia").getValue().toString()));
+                                                MainActivity.usuario.setDistanciaDia(Double.parseDouble(dataSnapshot.child("distanciaDia").getValue().toString()));
+                                                MainActivity.usuario.setPosiciones((ArrayList<Posicion>) dataSnapshot.child("posiciones").getValue());
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+
+                                    //Actualizacion y guardado de la posicion GPS
+                                    LatLng posicion = ObtenerPosicion();
+                                    try {
+                                        double lat = new Posicion((Map<String, String>) usuario.posiciones.get(usuario.posiciones.size() - 1)).lat;
+                                        double lon = new Posicion((Map<String, String>) usuario.posiciones.get(usuario.posiciones.size() - 1)).lon;
+                                        if (lat - posicion.latitude > 0.0001d || lat - posicion.latitude < -0.0001d
+                                                || lon - posicion.longitude > 0.0001d || lon - posicion.longitude < -0.0001d || usuario.posiciones.size() < 1)
+                                            usuario.posiciones.add(new Posicion(posicion.latitude, posicion.longitude, usuario.ultimaFecha));
+                                    } catch (NullPointerException e) {
+                                        usuario.posiciones = new ArrayList<>();
+                                        usuario.posiciones.add(new Posicion(posicion.latitude, posicion.longitude, usuario.ultimaFecha));
+                                    } catch (ArrayIndexOutOfBoundsException e) {
+                                        usuario.posiciones = new ArrayList<>();
+                                        usuario.posiciones.add(new Posicion(posicion.latitude, posicion.longitude, usuario.ultimaFecha));
+                                    } catch (Exception e) {
+                                        System.out.println(e.getMessage());
+                                    }
+
+                                    System.out.println("El servicio de actualizacion esta activo...");
+                                }
+                            });
+
+                            try {
+                                sleep(500);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        } while (true);
+
+                    }
+                }).start();
+
+                sincronizacionDatosBiometricosAsyncTask = new SincronizacionDatosBiometricosAsyncTask();
+                sincronizacionDatosBiometricosAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+
             } else {
                 //salimos si no se ha iniciado sesion
                 System.exit(0);
@@ -507,13 +614,19 @@ public class MainActivity extends AppCompatActivity {
             if (success) {
                 databaseReferenceUsuario.setValue(usuario);
                 editTextNombre.setEnabled(false);
+                editTextNombre.setTextColor(Color.WHITE);
                 editTextAltura.setEnabled(false);
+                editTextAltura.setTextColor(Color.WHITE);
                 editTextPeso.setEnabled(false);
+                editTextPeso.setTextColor(Color.WHITE);
             }
         } else {
             editTextPeso.setEnabled(true);
+            editTextPeso.setTextColor(Color.BLACK);
             editTextAltura.setEnabled(true);
+            editTextAltura.setTextColor(Color.BLACK);
             editTextNombre.setEnabled(true);
+            editTextNombre.setTextColor(Color.BLACK);
         }
     }
 
@@ -575,6 +688,7 @@ public class MainActivity extends AppCompatActivity {
     public void OnClickAniadirAmigo(View view) {
         Intent intentAniadirAmigo = new Intent(getApplicationContext(), EscanerQR.class);
         startActivity(intentAniadirAmigo);
+        leerUsuario();
     }
 
     /**
@@ -631,7 +745,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * The type Sincronizacion datos async task.
      */
-    public class SincronizacionDatosAsyncTask extends AsyncTask<String, Integer, Integer> {
+    public class SincronizacionDatosBiometricosAsyncTask extends AsyncTask<String, Integer, Integer> {
         int pasosCache = pasos;
         //distancia en m que se recorre al dar un paso
         float multiplicadorPasos;
@@ -644,15 +758,27 @@ public class MainActivity extends AppCompatActivity {
          */
         @Override
         protected Integer doInBackground(String... strings) {
-            do {
-                publishProgress(1);
-                try {
-                    sleep(6000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    do {
+
+                        try {
+                            sleep(6000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                publishProgress(1);
+                            }
+                        });
+                    } while (true);
+
                 }
-            } while (mainActivo);
-            return 0;
+            }).start();
+            return 1;
         }
 
         /**
@@ -700,13 +826,6 @@ public class MainActivity extends AppCompatActivity {
                 usuario.caloriasDia += 0.048f * (usuario.getPeso() * 2.2f) * 0.25f;
             }
             pasosCache = pasos;
-            //periodicamente actualizaremos la lista de amigos
-            dibujarListaAmigos();
-
-
-            if (!nombreUsuarioAmigo.isEmpty()) {
-                OnClickChatUsuario();
-            }
 
             //actualizamos la velocidad
             textViewVelocidad.setText(velocidad + "km/h");
@@ -727,52 +846,9 @@ public class MainActivity extends AppCompatActivity {
                 databaseReferenceUsuario.child("distanciaDia").setValue(0 + "");
                 databaseReferenceUsuario.child("ultimaFecha").setValue(new Usuario().getUltimaFecha());
             }
-            //si el boolean que se encarga de anunciar la eliminacion de un amigo esta en true se procedera a hacer sonar el sonido
-            if (sonido) {
-                ReproducirSonido();
-            }
 
-            //Actualizacion y guardado de la posicion GPS
-            LatLng posicion = ObtenerPosicion();
-            try {
-                double lat = usuario.posiciones.get(usuario.posiciones.size() - 1).lat;
-                double lon = usuario.posiciones.get(usuario.posiciones.size() - 1).lon;
-                if (lat - posicion.latitude > 0.0001d || lat - posicion.latitude < -0.0001d
-                        && lon - posicion.longitude > 0.0001d || lon - posicion.longitude < -0.0001d || usuario.posiciones.size() < 1)
-                    usuario.posiciones.add(new Posicion(posicion.latitude, posicion.longitude, usuario.ultimaFecha));
-            } catch (NullPointerException e) {
-                usuario.posiciones = new ArrayList<>();
-                usuario.posiciones.add(new Posicion(posicion.latitude, posicion.longitude, usuario.ultimaFecha));
-            } catch (ArrayIndexOutOfBoundsException e) {
-                usuario.posiciones = new ArrayList<>();
-                usuario.posiciones.add(new Posicion(posicion.latitude, posicion.longitude, usuario.ultimaFecha));
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
 
-//            //actualizacion de la informacion cada 6 seg si el usuario ya ha sido leido
-            if (usuarioLeido) {
-                if (databaseReferenceUsuario != null) {
-                    databaseReferenceUsuario.child("amigos").setValue(usuario.amigos);
-                    databaseReferenceUsuario.child("calorias").setValue(usuario.calorias);
-                    databaseReferenceUsuario.child("caloriasDia").setValue(usuario.caloriasDia);
-                    databaseReferenceUsuario.child("nombre").setValue(usuario.nombre);
-                    databaseReferenceUsuario.child("pasos").setValue(usuario.pasos);
-                    databaseReferenceUsuario.child("pasosDia").setValue(usuario.pasosDia);
-                    databaseReferenceUsuario.child("solicitudesEnviadas").setValue(usuario.solicitudesEnviadas);
-                    databaseReferenceUsuario.child("solicitudesRecibidas").setValue(usuario.solicitudesRecibidas);
-                    databaseReferenceUsuario.child("ultimaFecha").setValue(usuario.ultimaFecha);
-                    databaseReferenceUsuario.child("altura").setValue(usuario.altura);
-                    databaseReferenceUsuario.child("peso").setValue(usuario.peso);
-                    databaseReferenceUsuario.child("distancia").setValue(usuario.distancia);
-                    databaseReferenceUsuario.child("distanciaDia").setValue(usuario.distanciaDia);
-                    databaseReferenceUsuario.child("posiciones").setValue(usuario.posiciones);
-                } else {
-                    leerUsuario();
-                }
-            }
-
-            System.out.println("El servicio esta activo....");
+            System.out.println("El servicio biometrico esta activo....");
 
         }
     }

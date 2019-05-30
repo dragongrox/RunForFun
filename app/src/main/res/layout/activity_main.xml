@@ -22,8 +22,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.58000004">
+            app:layout_constraintTop_toTopOf="parent">
 
             <Button
                 android:id="@+id/buttonChatGlobal"
@@ -136,6 +135,18 @@
                 android:textColor="#FFEBEE" />
         </LinearLayout>
 
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:foregroundGravity="top"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.7"
+            app:srcCompat="@drawable/correr" />
+
     </android.support.constraint.ConstraintLayout>
 
     <android.support.design.widget.NavigationView
@@ -158,101 +169,122 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/b"
+                    android:backgroundTintMode="add"
+                    android:orientation="vertical">
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5sp"
+                        android:background="@color/browser_actions_divider_color">
+
+                        <TextView
+                            android:id="@+id/textViewNombre"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/nombre"
+                            android:textColor="@android:color/background_light"
+                            android:textSize="18sp" />
+
+                        <EditText
+                            android:id="@+id/editTextNombre"
+                            style="@style/Widget.AppCompat.Light.AutoCompleteTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="8dp"
+                            android:ems="10"
+                            android:enabled="false"
+                            android:gravity="right"
+                            android:inputType="textPersonName"
+                            android:text="@string/nombre"
+                            android:textColor="@android:color/white"
+                            tools:visibility="visible" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5sp"
+                        android:background="@color/browser_actions_divider_color">
+
+                        <TextView
+                            android:id="@+id/textViewAltura"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/altura"
+                            android:textColor="@android:color/background_light"
+                            android:textSize="18sp" />
+
+                        <EditText
+                            android:id="@+id/editTextAltura"
+                            style="@style/Widget.AppCompat.Light.AutoCompleteTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:ems="10"
+                            android:enabled="false"
+                            android:gravity="right|center_vertical"
+                            android:inputType="number"
+                            android:text="@string/altura"
+                            android:textColor="@android:color/white" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5sp"
+                        android:background="@color/browser_actions_divider_color">
+
+                        <TextView
+                            android:id="@+id/textViewPeso"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/peso"
+                            android:textColor="@android:color/background_light"
+                            android:textSize="18sp" />
+
+                        <EditText
+                            android:id="@+id/editTextPeso"
+                            style="@style/Widget.AppCompat.Light.AutoCompleteTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:ems="10"
+                            android:enabled="false"
+                            android:gravity="right|center_vertical"
+                            android:inputType="number"
+                            android:text="@string/peso"
+                            android:textColor="@android:color/white" />
+                    </TableRow>
+
+                </LinearLayout>
+
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/browser_actions_title_color">
+                    android:layout_margin="5sp">
 
-                    <TextView
-                        android:id="@+id/textViewNombre"
+                    <Button
+                        android:id="@+id/buttonEditar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/nombre"
-                        android:textColor="@android:color/background_light"
-                        android:textSize="18sp" />
-
-                    <EditText
-                        android:id="@+id/editTextNombre"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
                         android:layout_marginBottom="8dp"
-                        android:ems="10"
-                        android:enabled="false"
-                        android:gravity="right"
-                        android:inputType="textPersonName"
-                        android:text="@string/nombre"
-                        android:textColor="@android:color/background_light"
-                        tools:visibility="visible" />
-
+                        android:background="@drawable/com_facebook_tooltip_black_background"
+                        android:onClick="OnClicEditarCampos"
+                        android:text="@string/buttonEditar" />
                 </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/browser_actions_title_color">
-
-                    <TextView
-                        android:id="@+id/textViewAltura"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/altura"
-                        android:textColor="@android:color/background_light"
-                        android:textSize="18sp" />
-
-                    <EditText
-                        android:id="@+id/editTextAltura"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:ems="10"
-                        android:enabled="false"
-                        android:gravity="center_horizontal|center_vertical"
-                        android:inputType="number"
-                        android:text="@string/altura"
-                        android:textColor="@android:color/background_light" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/browser_actions_title_color">
-
-                    <TextView
-                        android:id="@+id/textViewPeso"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/peso"
-                        android:textColor="@android:color/background_light"
-                        android:textSize="18sp" />
-
-                    <EditText
-                        android:id="@+id/editTextPeso"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:ems="10"
-                        android:enabled="false"
-                        android:gravity="center_horizontal|center_vertical"
-                        android:inputType="number"
-                        android:text="@string/peso"
-                        android:textColor="@android:color/background_light" />
-                </TableRow>
-
-                <Button
-                    android:id="@+id/buttonEditar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:background="@drawable/com_facebook_tooltip_black_background"
-                    android:onClick="OnClicEditarCampos"
-                    android:text="@string/buttonEditar" />
 
                 <TextView
                     android:id="@+id/textViewDistanciaDia"
@@ -355,6 +387,7 @@
                     android:id="@+id/textView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="end"
                     android:background="@drawable/fui_idp_button_background_github"
                     android:text="@string/amigosActividad"
                     android:textAlignment="center"
@@ -366,7 +399,7 @@
                     android:id="@+id/recyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="start"
+                    android:layout_gravity="end"
                     android:choiceMode="singleChoice"
                     android:divider="@android:color/transparent"
                     android:dividerHeight="0dp"

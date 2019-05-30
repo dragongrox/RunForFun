@@ -67,10 +67,26 @@ public class RVAdapterChatUsuario extends RecyclerView.Adapter<RVAdapterChatUsua
         });
 
         Mensaje mensaje = new Mensaje((HashMap) listMensajes.get(i));
-        personViewHolder.textViewMensaje.setText(mensaje.texto);
+        DatabaseReference databaseReferenceMensaje = database.getReference(mensaje.autor);
+        databaseReferenceMensaje.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                personViewHolder.textViewMensaje.setText(dataSnapshot.child("nombre").getValue().toString() + ":\n" + mensaje.texto);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
         if (mensaje.autor.equals(MainActivity.nombreUsuario)) {
             personViewHolder.linearLayout.setBackground(new ColorDrawable(0xFF69F0AE));
+            ViewGroup.LayoutParams layoutParams = new LinearLayout.LayoutParams(personViewHolder.linearLayout.getLayoutParams());
+            ((LinearLayout.LayoutParams) layoutParams).setMargins(80, 0, 0, 0);
+            personViewHolder.linearLayout.setLayoutParams(layoutParams);
         }
     }
 

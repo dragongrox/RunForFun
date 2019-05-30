@@ -20,12 +20,9 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.List;
 
-import static java.lang.Thread.sleep;
-
 public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> {
     //inicializamos la vista que contendra los items
     List<String> listAmigos;
-    Usuario usuario = new Usuario();
 
     FirebaseDatabase database;
 
@@ -61,23 +58,11 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
 
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    //extraer los datos del usuario de la base de datos
-                    usuario.setAmigos(dataSnapshot.child("amigos").getValue().toString());
-                    usuario.setCalorias(Float.parseFloat(dataSnapshot.child("calorias").getValue().toString()));
-                    usuario.setCaloriasDia(Float.parseFloat(dataSnapshot.child("caloriasDia").getValue().toString()));
-                    usuario.setNombre(dataSnapshot.child("nombre").getValue().toString());
-                    usuario.setPasos(Integer.parseInt(dataSnapshot.child("pasos").getValue().toString()));
-                    usuario.setPasosDia(Integer.parseInt(dataSnapshot.child("pasosDia").getValue().toString()));
-                    usuario.setSolicitudesEnviadas(dataSnapshot.child("solicitudesEnviadas").getValue().toString());
-                    usuario.setSolicitudesRecibidas(dataSnapshot.child("solicitudesRecibidas").getValue().toString());
-                    usuario.setUltimaFecha(dataSnapshot.child("ultimaFecha").getValue().toString());
-                    usuario.setAltura(Integer.parseInt(dataSnapshot.child("altura").getValue().toString()));
-                    usuario.setPeso(Integer.parseInt(dataSnapshot.child("peso").getValue().toString()));
-                    usuario.setDistancia(Double.parseDouble(dataSnapshot.child("distancia").getValue().toString()));
-                    usuario.setDistanciaDia(Double.parseDouble(dataSnapshot.child("distanciaDia").getValue().toString()));
-
-                    personViewHolder.textViewAmigoCalorias.setText(df.format(usuario.getCaloriasDia()) + "");
-                    personViewHolder.textViewAmigoPasos.setText(usuario.getPasos() + "");
+                    if (dataSnapshot.exists()) {
+                        //extraer los datos del usuario de la base de datos
+                        personViewHolder.textViewAmigoCalorias.setText(df.format(Float.parseFloat(dataSnapshot.child("caloriasDia").getValue().toString())) + "");
+                        personViewHolder.textViewAmigoPasos.setText(dataSnapshot.child("pasosDia").getValue().toString());
+                    }
                 }
 
                 @Override
@@ -94,11 +79,6 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
                     MainActivity.EliminarAmigo(personViewHolder.textViewAmigo.getText().toString() + "");
                 }
             });
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             personViewHolder.imageButtonAbrirChat.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -106,11 +86,6 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
 
                 }
             });
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
 
         } else {
             personViewHolder.textViewAmigo.setText(R.string.errorNoTienesAmigos);

@@ -86,7 +86,7 @@ public class ChatUsuario extends AppCompatActivity {
 
     public void onClickEnviarMensaje(View view) {
 
-        String s = MainActivity.usuario.getNombre() + ": \n" + editTextChat.getText().toString();
+        String s = editTextChat.getText().toString();
         listaChat.add(new Mensaje(s, nombreUsuario));
         databaseReferenceChatUsuario.setValue(listaChat);
         databaseReferenceChatUsuarioAmigo.setValue(listaChat);

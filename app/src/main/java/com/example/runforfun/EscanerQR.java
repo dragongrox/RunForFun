@@ -121,7 +121,7 @@ public class EscanerQR extends AppCompatActivity implements ZXingScannerView.Res
             if (!MainActivity.usuario.getAmigos().contains(nombreAmigo)) {
                 //comprobamos el estado de las solicitudes
                 if (MainActivity.usuario.getSolicitudesRecibidas().contains(nombreAmigo)) {
-                    // por desarrollar (se añaden sus id en el apartado de amigos y eliminan las solicitudes
+                    // se añaden sus id en el apartado de amigos y eliminan las solicitudes
                     if (MainActivity.usuario.getAmigos().equals("n")) {
                         MainActivity.databaseReferenceUsuario.child("amigos").setValue(nombreAmigo + "@");
                     } else {
