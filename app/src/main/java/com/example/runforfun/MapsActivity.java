@@ -3,18 +3,18 @@ package com.example.runforfun;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
@@ -60,22 +60,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        // Add a marker in Sydney and move the camera
+        //Almacenamos en un array las posiciones de nustro usuario y las almacenamos en un polylineOptions punto por punto para ir dibujando la ruta
         ArrayList posiciones = MainActivity.usuario.posiciones;
-
-        LatLng sydney = new LatLng(location.getLatitude(), location.getLongitude());
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         PolylineOptions polylineOptions = new PolylineOptions();
-
+        LatLng latLngUltimaPosicion = null;
         for (int cont = 0; cont < posiciones.size(); cont++) {
             Map<String, String> map = (HashMap) posiciones.get(cont);
             Posicion posicion = new Posicion(map);
             polylineOptions.add(new LatLng(posicion.lat, posicion.lon));
+            //tambien almacenamos la ultima posicion para poder centrar la camara posteriormente alli
+            latLngUltimaPosicion = new LatLng(posicion.lat, posicion.lon);
         }
-
+        //le pasamos el trazado al mapa para que lo dibuje al usuario
         mMap.addPolyline(polylineOptions);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        //por ultimo creamos un CameraPosition que definira la posicion de la camara al iniciar el mapa
+        //de esta forma centraremos la vista en el ultimo punto de nuestra ruta
+        CameraPosition cameraPosition = new CameraPosition.Builder().target(latLngUltimaPosicion).zoom(20f).tilt(30f).build();
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
+        mMap.moveCamera(cameraUpdate);
+
     }
 }

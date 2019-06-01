@@ -292,6 +292,8 @@ public class MainActivity extends AppCompatActivity {
                         textViewDistancia.setText(getResources().getString(R.string.distancia) + ": " + df.format(usuario.getDistancia()));
                         textViewDistanciaDia.setText(getResources().getString(R.string.distanciaDia) + ": " + df.format(usuario.getDistanciaDia()));
 
+                        usuario = usuario;
+
                         //actualizamos la informacion en firebas cada 100 pasos y recalculamos las calorias
                         if (pasos > (pasosActualizados + 20))
                             databaseReferenceUsuario.setValue(usuario);
@@ -304,6 +306,8 @@ public class MainActivity extends AppCompatActivity {
                 };
                 //puesta en marcha del sensor podometro
                 sensorManager.registerListener(andar, sensor, SensorManager.SENSOR_DELAY_GAME);
+
+
             }
         }
     }
@@ -454,59 +458,63 @@ public class MainActivity extends AppCompatActivity {
 
                                     //actualizacion de la informacion cada 6 seg si el usuario ya ha sido leido
                                     if (usuarioLeido) {
-                                        databaseReferenceUsuario.child("amigos").setValue(MainActivity.usuario.amigos);
-                                        databaseReferenceUsuario.child("calorias").setValue(MainActivity.usuario.calorias);
-                                        databaseReferenceUsuario.child("caloriasDia").setValue(MainActivity.usuario.caloriasDia);
-                                        databaseReferenceUsuario.child("nombre").setValue(MainActivity.usuario.nombre);
-                                        databaseReferenceUsuario.child("pasos").setValue(MainActivity.usuario.pasos);
-                                        databaseReferenceUsuario.child("pasosDia").setValue(MainActivity.usuario.pasosDia);
-                                        databaseReferenceUsuario.child("solicitudesEnviadas").setValue(MainActivity.usuario.solicitudesEnviadas);
-                                        databaseReferenceUsuario.child("solicitudesRecibidas").setValue(MainActivity.usuario.solicitudesRecibidas);
-                                        databaseReferenceUsuario.child("ultimaFecha").setValue(MainActivity.usuario.ultimaFecha);
-                                        databaseReferenceUsuario.child("altura").setValue(MainActivity.usuario.altura);
-                                        databaseReferenceUsuario.child("peso").setValue(MainActivity.usuario.peso);
-                                        databaseReferenceUsuario.child("distancia").setValue(MainActivity.usuario.distancia);
-                                        databaseReferenceUsuario.child("distanciaDia").setValue(MainActivity.usuario.distanciaDia);
-                                        databaseReferenceUsuario.child("posiciones").setValue(MainActivity.usuario.posiciones);
+                                        databaseReferenceUsuario.child("amigos").setValue(usuario.amigos);
+                                        databaseReferenceUsuario.child("calorias").setValue(usuario.calorias);
+                                        databaseReferenceUsuario.child("caloriasDia").setValue(usuario.caloriasDia);
+                                        databaseReferenceUsuario.child("nombre").setValue(usuario.nombre);
+                                        databaseReferenceUsuario.child("pasos").setValue(usuario.pasos);
+                                        databaseReferenceUsuario.child("pasosDia").setValue(usuario.pasosDia);
+                                        databaseReferenceUsuario.child("solicitudesEnviadas").setValue(usuario.solicitudesEnviadas);
+                                        databaseReferenceUsuario.child("solicitudesRecibidas").setValue(usuario.solicitudesRecibidas);
+                                        databaseReferenceUsuario.child("ultimaFecha").setValue(usuario.ultimaFecha);
+                                        databaseReferenceUsuario.child("altura").setValue(usuario.altura);
+                                        databaseReferenceUsuario.child("peso").setValue(usuario.peso);
+                                        databaseReferenceUsuario.child("distancia").setValue(usuario.distancia);
+                                        databaseReferenceUsuario.child("distanciaDia").setValue(usuario.distanciaDia);
+                                        databaseReferenceUsuario.child("posiciones").setValue(usuario.posiciones);
+
+                                        databaseReferenceUsuario.addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                if (dataSnapshot.exists()) {
+                                                    usuario.setAmigos(dataSnapshot.child("amigos").getValue().toString());
+                                                    usuario.setCalorias(Float.parseFloat(dataSnapshot.child("calorias").getValue().toString()));
+                                                    usuario.setCaloriasDia(Float.parseFloat(dataSnapshot.child("caloriasDia").getValue().toString()));
+                                                    usuario.setNombre(dataSnapshot.child("nombre").getValue().toString());
+                                                    usuario.setPasos(Integer.parseInt(dataSnapshot.child("pasos").getValue().toString()));
+                                                    usuario.setPasosDia(Integer.parseInt(dataSnapshot.child("pasosDia").getValue().toString()));
+                                                    usuario.setSolicitudesEnviadas(dataSnapshot.child("solicitudesEnviadas").getValue().toString());
+                                                    usuario.setSolicitudesRecibidas(dataSnapshot.child("solicitudesRecibidas").getValue().toString());
+                                                    usuario.setUltimaFecha(dataSnapshot.child("ultimaFecha").getValue().toString());
+                                                    usuario.setAltura(Integer.parseInt(dataSnapshot.child("altura").getValue().toString()));
+                                                    usuario.setPeso(Integer.parseInt(dataSnapshot.child("peso").getValue().toString()));
+                                                    usuario.setDistancia(Double.parseDouble(dataSnapshot.child("distancia").getValue().toString()));
+                                                    usuario.setDistanciaDia(Double.parseDouble(dataSnapshot.child("distanciaDia").getValue().toString()));
+                                                    usuario.setPosiciones((ArrayList<Posicion>) dataSnapshot.child("posiciones").getValue());
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
                                     } else {
                                         leerUsuario();
                                     }
 
-                                    databaseReferenceUsuario.addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            if (dataSnapshot.exists()) {
-                                                MainActivity.usuario.setAmigos(dataSnapshot.child("amigos").getValue().toString());
-                                                MainActivity.usuario.setCalorias(Float.parseFloat(dataSnapshot.child("calorias").getValue().toString()));
-                                                MainActivity.usuario.setCaloriasDia(Float.parseFloat(dataSnapshot.child("caloriasDia").getValue().toString()));
-                                                MainActivity.usuario.setNombre(dataSnapshot.child("nombre").getValue().toString());
-                                                MainActivity.usuario.setPasos(Integer.parseInt(dataSnapshot.child("pasos").getValue().toString()));
-                                                MainActivity.usuario.setPasosDia(Integer.parseInt(dataSnapshot.child("pasosDia").getValue().toString()));
-                                                MainActivity.usuario.setSolicitudesEnviadas(dataSnapshot.child("solicitudesEnviadas").getValue().toString());
-                                                MainActivity.usuario.setSolicitudesRecibidas(dataSnapshot.child("solicitudesRecibidas").getValue().toString());
-                                                MainActivity.usuario.setUltimaFecha(dataSnapshot.child("ultimaFecha").getValue().toString());
-                                                MainActivity.usuario.setAltura(Integer.parseInt(dataSnapshot.child("altura").getValue().toString()));
-                                                MainActivity.usuario.setPeso(Integer.parseInt(dataSnapshot.child("peso").getValue().toString()));
-                                                MainActivity.usuario.setDistancia(Double.parseDouble(dataSnapshot.child("distancia").getValue().toString()));
-                                                MainActivity.usuario.setDistanciaDia(Double.parseDouble(dataSnapshot.child("distanciaDia").getValue().toString()));
-                                                MainActivity.usuario.setPosiciones((ArrayList<Posicion>) dataSnapshot.child("posiciones").getValue());
-                                            }
-                                        }
 
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                        }
-                                    });
 
                                     //Actualizacion y guardado de la posicion GPS
                                     LatLng posicion = ObtenerPosicion();
                                     try {
                                         double lat = new Posicion((Map<String, String>) usuario.posiciones.get(usuario.posiciones.size() - 1)).lat;
                                         double lon = new Posicion((Map<String, String>) usuario.posiciones.get(usuario.posiciones.size() - 1)).lon;
-                                        if (lat - posicion.latitude > 0.0001d || lat - posicion.latitude < -0.0001d
-                                                || lon - posicion.longitude > 0.0001d || lon - posicion.longitude < -0.0001d || usuario.posiciones.size() < 1)
+                                        if (lat - posicion.latitude > 0.0002d || lat - posicion.latitude < -0.0002d
+                                                || lon - posicion.longitude > 0.0002d || lon - posicion.longitude < -0.0002d || usuario.posiciones.size() < 1) {
                                             usuario.posiciones.add(new Posicion(posicion.latitude, posicion.longitude, usuario.ultimaFecha));
+                                            databaseReferenceUsuario.child("posiciones").setValue(usuario.posiciones);
+                                        }
                                     } catch (NullPointerException e) {
                                         usuario.posiciones = new ArrayList<>();
                                         usuario.posiciones.add(new Posicion(posicion.latitude, posicion.longitude, usuario.ultimaFecha));
@@ -516,6 +524,7 @@ public class MainActivity extends AppCompatActivity {
                                     } catch (Exception e) {
                                         System.out.println(e.getMessage());
                                     }
+                                    MainActivity.usuario = usuario;
 
                                     System.out.println("El servicio de actualizacion esta activo...");
                                 }
