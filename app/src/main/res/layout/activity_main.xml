@@ -172,7 +172,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/b"
+                    android:background="@drawable/fondo1"
                     android:backgroundTintMode="add"
                     android:orientation="vertical">
 
@@ -283,7 +283,8 @@
                         android:layout_marginBottom="8dp"
                         android:background="@drawable/com_facebook_tooltip_black_background"
                         android:onClick="OnClicEditarCampos"
-                        android:text="@string/buttonEditar" />
+                        android:text="@string/buttonEditar"
+                        android:textColor="@android:color/white" />
                 </TableRow>
 
                 <TextView
@@ -292,7 +293,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/fui_idp_button_background_twitter"
+                    android:background="@drawable/messenger_button_blue_bg_selector"
                     android:text="@string/distanciaDia"
                     android:textSize="18sp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -304,7 +305,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/fui_idp_button_background_twitter"
+                    android:background="@drawable/messenger_button_blue_bg_selector"
                     android:text="@string/caloriasDia"
                     android:textSize="18sp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -317,7 +318,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
-                    android:background="@drawable/fui_idp_button_background_twitter"
+                    android:background="@drawable/messenger_button_blue_bg_selector"
                     android:text="@string/calorias"
                     android:textSize="18sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -331,7 +332,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/fui_idp_button_background_twitter"
+                    android:background="@drawable/messenger_button_blue_bg_selector"
                     android:text="@string/pasos"
                     android:textSize="18sp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -343,7 +344,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/fui_idp_button_background_twitter"
+                    android:background="@drawable/messenger_button_blue_bg_selector"
                     android:text="@string/distancia"
                     android:textSize="18sp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -355,7 +356,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/fui_idp_button_background_twitter"
+                    android:background="@drawable/messenger_button_blue_bg_selector"
                     android:text="@string/pasosDia"
                     android:textSize="18sp"
                     app:layout_constraintStart_toStartOf="parent"

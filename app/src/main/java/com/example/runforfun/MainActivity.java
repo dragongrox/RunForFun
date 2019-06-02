@@ -631,11 +631,11 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             editTextPeso.setEnabled(true);
-            editTextPeso.setTextColor(Color.BLACK);
+            editTextPeso.setTextColor(Color.CYAN);
             editTextAltura.setEnabled(true);
-            editTextAltura.setTextColor(Color.BLACK);
+            editTextAltura.setTextColor(Color.CYAN);
             editTextNombre.setEnabled(true);
-            editTextNombre.setTextColor(Color.BLACK);
+            editTextNombre.setTextColor(Color.CYAN);
         }
     }
 
