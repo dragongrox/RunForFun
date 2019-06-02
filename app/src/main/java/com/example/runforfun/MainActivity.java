@@ -725,7 +725,7 @@ public class MainActivity extends AppCompatActivity {
                         createSignInIntent();
                     }
                 });
-        System.exit(0);
+        createSignInIntent();
         // [END auth_fui_signout]
 
     }
