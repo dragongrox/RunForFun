@@ -323,7 +323,7 @@ public class MainActivity extends AppCompatActivity {
         //creamos el adaptador para la lista
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recyclerViewAmigos.setLayoutManager(llm);
-        recyclerViewAmigos.setAdapter(new RVAdapter(listaAmigos));
+        recyclerViewAmigos.setAdapter(new RVAdapterListaAmigos(listaAmigos));
 
     }
 
@@ -456,7 +456,7 @@ public class MainActivity extends AppCompatActivity {
                                         ReproducirSonido();
                                     }
 
-                                    //actualizacion de la informacion cada 6 seg si el usuario ya ha sido leido
+                                    //actualizacion de la informacion cada 2 seg si el usuario ya ha sido leido
                                     if (usuarioLeido) {
                                         databaseReferenceUsuario.child("amigos").setValue(usuario.amigos);
                                         databaseReferenceUsuario.child("calorias").setValue(usuario.calorias);

@@ -20,14 +20,14 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.List;
 
-public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> {
+public class RVAdapterListaAmigos extends RecyclerView.Adapter<RVAdapterListaAmigos.PersonViewHolder> {
     //inicializamos la vista que contendra los items
     List<String> listAmigos;
 
     FirebaseDatabase database;
 
     //inicializamos la vista con la vista que se nos pasa desde el main
-    RVAdapter(List<String> listAmigos) {
+    RVAdapterListaAmigos(List<String> listAmigos) {
         this.listAmigos = listAmigos;
     }
 
@@ -40,7 +40,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
     //inicializamos el ViewHolder y especificamos el layout que usara nuestro RecyclerView para cada item
     @Override
     public PersonViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recycler_view_item, viewGroup, false);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recycler_view_item_lista_amigos, viewGroup, false);
         PersonViewHolder pvh = new PersonViewHolder(v);
         return pvh;
     }

@@ -403,7 +403,7 @@
                     android:choiceMode="singleChoice"
                     android:divider="@android:color/transparent"
                     android:dividerHeight="0dp"
-                    tools:listitem="@layout/recycler_view_item">
+                    tools:listitem="@layout/recycler_view_item_lista_amigos">
 
                 </android.support.v7.widget.RecyclerView>
 
