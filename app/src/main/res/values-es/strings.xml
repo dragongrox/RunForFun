@@ -22,4 +22,12 @@
     <string name="errorSiempreTuAmigo">Señor, yo simpre seré tu amigo..... pero ahora enserio, no puedes agregarte de amigo >:|</string>
     <string name="paginaWeb">Pagina Web</string>
     <string name="amigosActividad">Esta es la actividad de tus amigos</string>
+    <string name="aniadirAmigo">Añadir amigo</string>
+    <string name="bienvenidaChat">Te damos la bienvenida a este chat</string>
+    <string name="enviar">Enviar</string>
+    <string name="escanear">Escanear</string>
+    <string name="rutaMapa">Ver mi ruta en el mapa</string>
+    <string name="textoChat">Escribe aqui</string>
+    <string name="title_activity_maps">Mapa</string>
+    <string name="velocidad">Velocidad:</string>
 </resources>

@@ -22,4 +22,12 @@
     <string name="nombre">お名前</string>
     <string name="paginaWeb">ウェブサイト</string>
     <string name="amigosActividad">これはあなたの友達の活動です</string>
+    <string name="aniadirAmigo">友達を追加</string>
+    <string name="bienvenidaChat">このチャットへようこそ</string>
+    <string name="enviar">送る</string>
+    <string name="escanear">スキャンする</string>
+    <string name="rutaMapa">私のルートを地図で見る</string>
+    <string name="textoChat">ここに書いて</string>
+    <string name="title_activity_maps">地図</string>
+    <string name="velocidad">スピード：</string>
 </resources>

@@ -22,4 +22,12 @@
     <string name="nombre">Name</string>
     <string name="paginaWeb">Website</string>
     <string name="amigosActividad">Dies ist die Aktivität Ihrer Freunde</string>
+    <string name="velocidad">Geschwindigkeit:</string>
+    <string name="title_activity_maps">Karte</string>
+    <string name="textoChat">Schreiben Sie hier</string>
+    <string name="rutaMapa">Sehen Sie meine Route auf der Karte</string>
+    <string name="escanear">Scannen</string>
+    <string name="enviar">Senden</string>
+    <string name="bienvenidaChat">Willkommen zu diesem Chat</string>
+    <string name="aniadirAmigo">Freund hinzufügen</string>
 </resources>

@@ -531,7 +531,7 @@ public class MainActivity extends AppCompatActivity {
                             });
 
                             try {
-                                sleep(500);
+                                sleep(2000);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
@@ -667,30 +667,37 @@ public class MainActivity extends AppCompatActivity {
         // [END auth_fui_pp_tos]
     }
 
+    /**
+     * Metodo para obtener la posicion actual GPS
+     *
+     * @return
+     */
     public LatLng ObtenerPosicion() {
+        //Inicializamos un location manager para poder obtener la posicion de el
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        //Comprobamos los permisos del GPS o su existencia y pedimos permiso si hace falta
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+            //En el caso de no obtener el permiso o no tener el dispositivo un sensor GPS se devuelve null
             return null;
         }
+        //Obtenermos la posicion con el metodo getLastKnownLocation
         Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        //inicializamos el objeto de posicion
         LatLng posicion = new LatLng(0, 0);
+        //comprobando que el objeto location no sea nulo almacenamos la longitud y latitud dentro posicion
         if (location != null) {
             double latitud = location.getLatitude();
             double longitud = location.getLongitude();
             posicion = new LatLng(latitud, longitud);
         }
+        //devolvemos el objeto posicion
         return posicion;
     }
 
     /**
-     * On click aniadir amigo.
+     * On click para abrir el activity de aniadir amigo.
      *
      * @param view view del main
      */
@@ -823,7 +830,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
 
-
+            //Aqui se calculan los distintos datos biometricos
             velocidad = (((pasos - pasosCache) * 10) * multiplicadorPasos) * (0.06f * 3);
             usuario.setDistancia(usuario.getDistancia() + ((pasos - pasosCache) * multiplicadorPasos) / 1000);
             usuario.setDistanciaDia(usuario.getDistanciaDia() + ((pasos - pasosCache) * multiplicadorPasos) / 1000);

@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/fondo">
+
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <Button
+                android:id="@+id/buttonChatGlobal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5sp"
+                android:layout_marginStart="5sp"
+                android:layout_marginLeft="5sp"
+                android:layout_marginTop="5sp"
+                android:layout_marginEnd="5sp"
+                android:layout_marginRight="5sp"
+                android:layout_marginBottom="5sp"
+                android:background="@drawable/fui_idp_button_background_facebook"
+                android:onClick="OnClicChatGlobal"
+                android:text="Chat Global"
+                android:textColor="#FFEBEE" />
+
+            <Button
+                android:id="@+id/buttonMaps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5sp"
+                android:layout_marginStart="5sp"
+                android:layout_marginLeft="5sp"
+                android:layout_marginTop="5sp"
+                android:layout_marginEnd="5sp"
+                android:layout_marginRight="5sp"
+                android:layout_marginBottom="5sp"
+                android:background="@drawable/fui_idp_button_background_facebook"
+                android:onClick="OnClicMaps"
+                android:text="@string/rutaMapa"
+                android:textColor="#FFEBEE" />
+
+            <Button
+                android:id="@+id/buttonAniadirAmigo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5sp"
+                android:layout_marginStart="5sp"
+                android:layout_marginLeft="5sp"
+                android:layout_marginTop="5sp"
+                android:layout_marginEnd="5sp"
+                android:layout_marginRight="5sp"
+                android:layout_marginBottom="5sp"
+                android:background="@drawable/fui_idp_button_background_facebook"
+                android:onClick="OnClickAniadirAmigo"
+                android:text="@string/aniadirAmigo"
+                android:textAlignment="center"
+                android:textColor="#FFEBEE" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+            <Button
+                android:id="@+id/buttonPaginaWeb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5sp"
+                android:layout_marginStart="5sp"
+                android:layout_marginLeft="5sp"
+                android:layout_marginTop="5sp"
+                android:layout_marginEnd="5sp"
+                android:layout_marginRight="5sp"
+                android:layout_marginBottom="5sp"
+                android:background="@drawable/fui_idp_button_background_facebook"
+                android:onClick="irAlSitioclick"
+                android:padding="5sp"
+                android:paddingStart="5sp"
+                android:paddingLeft="5sp"
+                android:paddingTop="5sp"
+                android:paddingEnd="5sp"
+                android:paddingRight="5sp"
+                android:paddingBottom="5sp"
+                android:text="@string/paginaWeb"
+                android:textColor="#FFEBEE" />
+
+            <Button
+                android:id="@+id/buttonLogOut"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5sp"
+                android:layout_marginStart="5sp"
+                android:layout_marginLeft="5sp"
+                android:layout_marginTop="5sp"
+                android:layout_marginEnd="5sp"
+                android:layout_marginRight="5sp"
+                android:layout_marginBottom="5sp"
+                android:background="@drawable/fui_idp_button_background_facebook"
+                android:onClick="signOut"
+                android:padding="5sp"
+                android:paddingStart="5sp"
+                android:paddingLeft="5sp"
+                android:paddingTop="5sp"
+                android:paddingEnd="5sp"
+                android:paddingRight="5sp"
+                android:paddingBottom="5sp"
+                android:text="@string/cerrarSesion"
+                android:textColor="#FFEBEE" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:foregroundGravity="top"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/correr" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.design.widget.NavigationView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@drawable/com_facebook_button_send_background"
+        android:fitsSystemWindows="true"
+        app:itemBackground="@drawable/com_facebook_button_send_background">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="true"
+            android:fillViewport="true"
+            android:scrollbarStyle="insideOverlay">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/b"
+                    android:backgroundTintMode="add"
+                    android:orientation="vertical">
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5sp"
+                        android:background="@color/browser_actions_divider_color">
+
+                        <TextView
+                            android:id="@+id/textViewNombre"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/nombre"
+                            android:textColor="@android:color/background_light"
+                            android:textSize="18sp" />
+
+                        <EditText
+                            android:id="@+id/editTextNombre"
+                            style="@style/Widget.AppCompat.Light.AutoCompleteTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="8dp"
+                            android:ems="10"
+                            android:enabled="false"
+                            android:gravity="right"
+                            android:inputType="textPersonName"
+                            android:text="@string/nombre"
+                            android:textColor="@android:color/white"
+                            tools:visibility="visible" />
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5sp"
+                        android:background="@color/browser_actions_divider_color">
+
+                        <TextView
+                            android:id="@+id/textViewAltura"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/altura"
+                            android:textColor="@android:color/background_light"
+                            android:textSize="18sp" />
+
+                        <EditText
+                            android:id="@+id/editTextAltura"
+                            style="@style/Widget.AppCompat.Light.AutoCompleteTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:ems="10"
+                            android:enabled="false"
+                            android:gravity="right|center_vertical"
+                            android:inputType="number"
+                            android:text="@string/altura"
+                            android:textColor="@android:color/white" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5sp"
+                        android:background="@color/browser_actions_divider_color">
+
+                        <TextView
+                            android:id="@+id/textViewPeso"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/peso"
+                            android:textColor="@android:color/background_light"
+                            android:textSize="18sp" />
+
+                        <EditText
+                            android:id="@+id/editTextPeso"
+                            style="@style/Widget.AppCompat.Light.AutoCompleteTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:ems="10"
+                            android:enabled="false"
+                            android:gravity="right|center_vertical"
+                            android:inputType="number"
+                            android:text="@string/peso"
+                            android:textColor="@android:color/white" />
+                    </TableRow>
+
+                </LinearLayout>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5sp">
+
+                    <Button
+                        android:id="@+id/buttonEditar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/com_facebook_tooltip_black_background"
+                        android:onClick="OnClicEditarCampos"
+                        android:text="@string/buttonEditar" />
+                </TableRow>
+
+                <TextView
+                    android:id="@+id/textViewDistanciaDia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/fui_idp_button_background_twitter"
+                    android:text="@string/distanciaDia"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewCaloriasDia" />
+
+                <TextView
+                    android:id="@+id/textViewCaloriasDia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/fui_idp_button_background_twitter"
+                    android:text="@string/caloriasDia"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewPasosDia" />
+
+                <TextView
+                    android:id="@+id/textViewAmigoCalorias"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/fui_idp_button_background_twitter"
+                    android:text="@string/calorias"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewDistanciaDia"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/textViewAmigoPasos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/fui_idp_button_background_twitter"
+                    android:text="@string/pasos"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewAmigoCalorias" />
+
+                <TextView
+                    android:id="@+id/textViewDistancia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/fui_idp_button_background_twitter"
+                    android:text="@string/distancia"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewAmigoPasos" />
+
+                <TextView
+                    android:id="@+id/textViewPasosDia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/fui_idp_button_background_twitter"
+                    android:text="@string/pasosDia"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/editTextPeso" />
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:visibility="invisible">
+
+                    <TextView
+                        android:id="@+id/textViewVelocidadNombre"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/velocidad"
+                        android:textSize="18sp"
+                        android:visibility="invisible" />
+
+                    <TextView
+                        android:id="@+id/textViewVelocidad"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="0"
+                        android:visibility="invisible" />
+                </TableRow>
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:background="@drawable/fui_idp_button_background_github"
+                    android:text="@string/amigosActividad"
+                    android:textAlignment="center"
+                    android:textAllCaps="true"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/colorPrimary" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="end"
+                    android:choiceMode="singleChoice"
+                    android:divider="@android:color/transparent"
+                    android:dividerHeight="0dp"
+                    tools:listitem="@layout/recycler_view_item">
+
+                </android.support.v7.widget.RecyclerView>
+
+            </LinearLayout>
+        </ScrollView>
+
+    </android.support.design.widget.NavigationView>
+</android.support.v4.widget.DrawerLayout>

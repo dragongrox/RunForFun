@@ -22,4 +22,12 @@
     <string name="errorSiempreTuAmigo">Signore, sarò sempre tuo amico ..... ma ora sul serio, non puoi aggiungere il tuo amico>: |</string>
     <string name="paginaWeb">sito web</string>
     <string name="amigosActividad">Questa è l\'attività dei tuoi amici</string>
+    <string name="textoChat">Scrivi qui</string>
+    <string name="title_activity_maps">Mappa</string>
+    <string name="velocidad">Velocità:</string>
+    <string name="rutaMapa">Vedi il mio percorso sulla mappa</string>
+    <string name="escanear">Scansione</string>
+    <string name="enviar">Inviare</string>
+    <string name="bienvenidaChat">Benvenuti in questa chat</string>
+    <string name="aniadirAmigo">Aggiungi amico</string>
 </resources>
