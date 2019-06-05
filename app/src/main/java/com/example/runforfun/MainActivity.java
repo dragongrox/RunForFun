@@ -108,6 +108,9 @@ public class MainActivity extends AppCompatActivity {
     //formateador de los decimales
     DecimalFormat df;
 
+    //margen de error del gps
+    static final double MARGEN_ERROR = 0.0002d;
+
     //variable semaforo que controla la finalizacion del AsyncTask
     boolean asyncTaskTerminado = false;
     //vriable semaform que controla la lectura de los datos
@@ -510,8 +513,8 @@ public class MainActivity extends AppCompatActivity {
                                     try {
                                         double lat = new Posicion((Map<String, String>) usuario.posiciones.get(usuario.posiciones.size() - 1)).lat;
                                         double lon = new Posicion((Map<String, String>) usuario.posiciones.get(usuario.posiciones.size() - 1)).lon;
-                                        if (lat - posicion.latitude > 0.0002d || lat - posicion.latitude < -0.0002d
-                                                || lon - posicion.longitude > 0.0002d || lon - posicion.longitude < -0.0002d || usuario.posiciones.size() < 1) {
+                                        if (lat - posicion.latitude > MARGEN_ERROR || lat - posicion.latitude < -MARGEN_ERROR
+                                                || lon - posicion.longitude > MARGEN_ERROR || lon - posicion.longitude < -MARGEN_ERROR || usuario.posiciones.size() < 1) {
                                             usuario.posiciones.add(new Posicion(posicion.latitude, posicion.longitude, usuario.ultimaFecha));
                                             databaseReferenceUsuario.child("posiciones").setValue(usuario.posiciones);
                                         }
